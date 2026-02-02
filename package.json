@@ -1,0 +1,62 @@
+{
+  "name": "@gramaziokohler/compas_pb_ts",
+  "version": "1.0.2",
+  "description": "COMPAS Protobuf wrapper for TypeScript",
+  "keywords": [
+    "COMPAS",
+    "Protobuf",
+    "typescript"
+  ],
+  "homepage": "https://github.com/gramaziokohler/compas_pb_ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./browser": {
+      "import": "./dist/browser.js",
+      "types": "./dist/browser.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "browser": "./dist/browser.js",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "biome check --error-on-warnings",
+    "format": "biome format --write",
+    "test": "vitest run --coverage",
+    "size": "size-limit"
+  },
+  "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
+  "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
+  "repository": "github:gramaziokohler/compas_pb_ts",
+  "bugs": {
+    "url": "https://github.com/gramaziokohler/compas_pb_ts/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "size-limit": [
+    {
+      "path": "dist/browser.js",
+      "limit": "3.5 KB"
+    }
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "2.2.3",
+    "@size-limit/preset-small-lib": "^8.2.4",
+    "@types/node": "^22.18.1",
+    "@vitest/coverage-istanbul": "3.2.4",
+    "size-limit": "^8.2.4",
+    "tsdown": "^0.15.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
