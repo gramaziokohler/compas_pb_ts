@@ -5,8 +5,10 @@ import {
   PlaneData,
   LineData,
   CircleData,
+  BoxData,
 } from "./generated/compas_pb/data/geometry";
-import { MeshData } from "./generated/compas_pb/data/datastructures";
+
+import * as THREE from "three";
 
 // ============================================================================
 // PointData
@@ -75,4 +77,50 @@ export function bytesToCircleData(bytes: Uint8Array): CircleData {
 
 export function circleDataToBytes(circle: CircleData): Uint8Array {
   return CircleData.encode(circle).finish();
+}
+
+// ============================================================================
+// BoxData
+// ============================================================================
+
+export function bytesToBoxData(bytes: Uint8Array): BoxData {
+  return BoxData.decode(bytes);
+}
+
+export function boxDataToBytes(box: BoxData): Uint8Array {
+  return BoxData.encode(box).finish();
+}
+
+export function boxDataToThree(box: BoxData): THREE.BoxGeometry {
+  // geometry of the box
+  const box_geometry = new THREE.BoxGeometry(box.xsize, box.ysize, box.zsize);
+
+  // create transformation matrix from the frame
+  if (box.frame) {
+    const position = new THREE.Vector3(
+      box.frame.point!.x,
+      box.frame.point!.y,
+      box.frame.point!.z,
+    );
+    const xaxis = new THREE.Vector3(
+      box.frame.xaxis!.x,
+      box.frame.xaxis!.y,
+      box.frame.xaxis!.z,
+    );
+    const yaxis = new THREE.Vector3(
+      box.frame.yaxis!.x,
+      box.frame.yaxis!.y,
+      box.frame.yaxis!.z,
+    );
+    const zaxis = new THREE.Vector3().crossVectors(xaxis, yaxis);
+
+    const matrix = new THREE.Matrix4();
+    matrix.makeBasis(xaxis, yaxis, zaxis);
+    matrix.setPosition(position);
+
+    // applyt the matrix to the geometry
+    box_geometry.applyMatrix4(matrix);
+  }
+
+  return new THREE.BoxGeometry(10, 10, 10);
 }

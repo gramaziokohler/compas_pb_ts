@@ -54,11 +54,15 @@
     "@biomejs/biome": "2.2.3",
     "@size-limit/preset-small-lib": "^8.2.4",
     "@types/node": "^22.18.1",
+    "@types/three": "^0.182.0",
     "@vitest/coverage-istanbul": "3.2.4",
     "size-limit": "^8.2.4",
+    "ts-proto": "^2.7.2",
     "tsdown": "^0.15.0",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
-    "ts-proto": "^2.7.2"
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "three": "^0.182.0"
   }
 }

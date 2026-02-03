@@ -5,6 +5,7 @@ import { frameDataToBytes, bytesToFrameData } from "../src/converters";
 import { planeDataToBytes, bytesToPlaneData } from "../src/converters";
 import { lineDataToBytes, bytesToLineData } from "../src/converters";
 import { circleDataToBytes, bytesToCircleData } from "../src/converters";
+import { boxDataToBytes, bytesToBoxData } from "../src/converters";
 import {
   PointData,
   VectorData,
@@ -12,6 +13,7 @@ import {
   PlaneData,
   LineData,
   CircleData,
+  BoxData,
 } from "../src/generated/compas_pb/data/geometry";
 
 // Sample Data
@@ -58,7 +60,7 @@ const originFrame: FrameData = {
 
 // Tests
 
-describe("CONVERTERS", () => {
+describe("GEOMETRIC PRIMITIVES", () => {
   it("PointData round trip", () => {
     // 1. Create the original data object
     const originalPoint: PointData = {
@@ -81,9 +83,7 @@ describe("CONVERTERS", () => {
     expect(decodedPoint.name).toBe(originalPoint.name);
 
     // Float properties should be checked for closeness to handle precision differences
-    expect(decodedPoint.x).toBeCloseTo(originalPoint.x);
-    expect(decodedPoint.y).toBeCloseTo(originalPoint.y);
-    expect(decodedPoint.z).toBeCloseTo(originalPoint.z);
+    point_similar_to_point(decodedPoint, originalPoint);
   });
 
   it("VectorData round trip", () => {
@@ -101,9 +101,7 @@ describe("CONVERTERS", () => {
     expect(decodedVector.guid).toBe(originalVector.guid);
     expect(decodedVector.name).toBe(originalVector.name);
 
-    expect(decodedVector.x).toBeCloseTo(originalVector.x);
-    expect(decodedVector.y).toBeCloseTo(originalVector.y);
-    expect(decodedVector.z).toBeCloseTo(originalVector.z);
+    vector_similar_to_vector(decodedVector, originalVector);
   });
 
   it("FrameData round trip", () => {
@@ -121,23 +119,7 @@ describe("CONVERTERS", () => {
     expect(decodedFrame.guid).toBe(originalFrame.guid);
     expect(decodedFrame.name).toBe(originalFrame.name);
 
-    expect(decodedFrame.point?.guid).toBe(originalFrame.point?.guid);
-    expect(decodedFrame.point?.name).toBe(originalFrame.point?.name);
-    expect(decodedFrame.point?.x).toBeCloseTo(originalFrame.point?.x || 0);
-    expect(decodedFrame.point?.y).toBeCloseTo(originalFrame.point?.y || 0);
-    expect(decodedFrame.point?.z).toBeCloseTo(originalFrame.point?.z || 0);
-
-    expect(decodedFrame.xaxis?.guid).toBe(originalFrame.xaxis?.guid);
-    expect(decodedFrame.xaxis?.name).toBe(originalFrame.xaxis?.name);
-    expect(decodedFrame.xaxis?.x).toBeCloseTo(originalFrame.xaxis?.x || 0);
-    expect(decodedFrame.xaxis?.y).toBeCloseTo(originalFrame.xaxis?.y || 0);
-    expect(decodedFrame.xaxis?.z).toBeCloseTo(originalFrame.xaxis?.z || 0);
-
-    expect(decodedFrame.yaxis?.guid).toBe(originalFrame.yaxis?.guid);
-    expect(decodedFrame.yaxis?.name).toBe(originalFrame.yaxis?.name);
-    expect(decodedFrame.yaxis?.x).toBeCloseTo(originalFrame.yaxis?.x || 0);
-    expect(decodedFrame.yaxis?.y).toBeCloseTo(originalFrame.yaxis?.y || 0);
-    expect(decodedFrame.yaxis?.z).toBeCloseTo(originalFrame.yaxis?.z || 0);
+    frame_similar_to_frame(decodedFrame, originalFrame);
   });
 
   it("PlaneData round trip", () => {
@@ -154,21 +136,12 @@ describe("CONVERTERS", () => {
     expect(decodedPlane.guid).toBe(originalPlane.guid);
     expect(decodedPlane.name).toBe(originalPlane.name);
 
-    expect(decodedPlane.point?.guid).toBe(originalPlane.point?.guid);
-    expect(decodedPlane.point?.name).toBe(originalPlane.point?.name);
-    expect(decodedPlane.point?.x).toBeCloseTo(originalPlane.point?.x || 0);
-    expect(decodedPlane.point?.y).toBeCloseTo(originalPlane.point?.y || 0);
-    expect(decodedPlane.point?.z).toBeCloseTo(originalPlane.point?.z || 0);
-
-    expect(decodedPlane.normal?.guid).toBe(originalPlane.normal?.guid);
-    expect(decodedPlane.normal?.name).toBe(originalPlane.normal?.name);
-    expect(decodedPlane.normal?.x).toBeCloseTo(originalPlane.normal?.x || 0);
-    expect(decodedPlane.normal?.y).toBeCloseTo(originalPlane.normal?.y || 0);
-    expect(decodedPlane.normal?.z).toBeCloseTo(originalPlane.normal?.z || 0);
+    point_similar_to_point(decodedPlane.point!, originalPlane.point!);
+    vector_similar_to_vector(decodedPlane.normal!, originalPlane.normal!);
   });
 
   it("LineData round trip", () => {
-    const originalLine = {
+    const originalLine: LineData = {
       guid: "line-guid-1234",
       name: "MyLine",
       start: originPoint,
@@ -181,17 +154,8 @@ describe("CONVERTERS", () => {
     expect(decodedLine.guid).toBe(originalLine.guid);
     expect(decodedLine.name).toBe(originalLine.name);
 
-    expect(decodedLine.start?.guid).toBe(originalLine.start?.guid);
-    expect(decodedLine.start?.name).toBe(originalLine.start?.name);
-    expect(decodedLine.start?.x).toBeCloseTo(originalLine.start?.x || 0);
-    expect(decodedLine.start?.y).toBeCloseTo(originalLine.start?.y || 0);
-    expect(decodedLine.start?.z).toBeCloseTo(originalLine.start?.z || 0);
-
-    expect(decodedLine.end?.guid).toBe(originalLine.end?.guid);
-    expect(decodedLine.end?.name).toBe(originalLine.end?.name);
-    expect(decodedLine.end?.x).toBeCloseTo(originalLine.end?.x || 0);
-    expect(decodedLine.end?.y).toBeCloseTo(originalLine.end?.y || 0);
-    expect(decodedLine.end?.z).toBeCloseTo(originalLine.end?.z || 0);
+    point_similar_to_point(decodedLine.start!, originalLine.start!);
+    point_similar_to_point(decodedLine.end!, originalLine.end!);
   });
 
   it("CircleData round trip", () => {
@@ -209,55 +173,64 @@ describe("CONVERTERS", () => {
     expect(decodedCircle.name).toBe(originalCircle.name);
     expect(decodedCircle.radius).toBeCloseTo(originalCircle.radius);
 
-    expect(decodedCircle.frame?.guid).toBe(originalCircle.frame?.guid);
-    expect(decodedCircle.frame?.name).toBe(originalCircle.frame?.name);
+    frame_similar_to_frame(decodedCircle.frame!, originalCircle.frame!);
+  });
 
-    expect(decodedCircle.frame?.point?.guid).toBe(
-      originalCircle.frame?.point?.guid,
-    );
-    expect(decodedCircle.frame?.point?.name).toBe(
-      originalCircle.frame?.point?.name,
-    );
-    expect(decodedCircle.frame?.point?.x).toBeCloseTo(
-      originalCircle.frame?.point?.x || 0,
-    );
-    expect(decodedCircle.frame?.point?.y).toBeCloseTo(
-      originalCircle.frame?.point?.y || 0,
-    );
-    expect(decodedCircle.frame?.point?.z).toBeCloseTo(
-      originalCircle.frame?.point?.z || 0,
-    );
+  it("BoxData round trip", () => {
+    const originalBox: BoxData = {
+      guid: "box-guid-1234",
+      name: "MyBox",
+      frame: originFrame,
+      xsize: 10,
+      ysize: 20,
+      zsize: 30,
+    };
 
-    expect(decodedCircle.frame?.xaxis?.guid).toBe(
-      originalCircle.frame?.xaxis?.guid,
-    );
-    expect(decodedCircle.frame?.xaxis?.name).toBe(
-      originalCircle.frame?.xaxis?.name,
-    );
-    expect(decodedCircle.frame?.xaxis?.x).toBeCloseTo(
-      originalCircle.frame?.xaxis?.x || 0,
-    );
-    expect(decodedCircle.frame?.xaxis?.y).toBeCloseTo(
-      originalCircle.frame?.xaxis?.y || 0,
-    );
-    expect(decodedCircle.frame?.xaxis?.z).toBeCloseTo(
-      originalCircle.frame?.xaxis?.z || 0,
-    );
+    const bytes = boxDataToBytes(originalBox);
+    const decodedBox = bytesToBoxData(bytes);
 
-    expect(decodedCircle.frame?.yaxis?.guid).toBe(
-      originalCircle.frame?.yaxis?.guid,
-    );
-    expect(decodedCircle.frame?.yaxis?.name).toBe(
-      originalCircle.frame?.yaxis?.name,
-    );
-    expect(decodedCircle.frame?.yaxis?.x).toBeCloseTo(
-      originalCircle.frame?.yaxis?.x || 0,
-    );
-    expect(decodedCircle.frame?.yaxis?.y).toBeCloseTo(
-      originalCircle.frame?.yaxis?.y || 0,
-    );
-    expect(decodedCircle.frame?.yaxis?.z).toBeCloseTo(
-      originalCircle.frame?.yaxis?.z || 0,
-    );
+    expect(decodedBox.guid).toBe(originalBox.guid);
+    expect(decodedBox.name).toBe(originalBox.name);
+    expect(decodedBox.xsize).toBeCloseTo(originalBox.xsize);
+    expect(decodedBox.ysize).toBeCloseTo(originalBox.ysize);
+    expect(decodedBox.zsize).toBeCloseTo(originalBox.zsize);
+
+    frame_similar_to_frame(decodedBox.frame!, originalBox.frame!);
   });
 });
+
+// hELPER FUNCTIONS
+
+function frame_similar_to_frame(
+  frameData: FrameData,
+  otherFrameData: FrameData,
+) {
+  expect(frameData.guid).toBe(otherFrameData.guid);
+  expect(frameData.name).toBe(otherFrameData.name);
+
+  point_similar_to_point(frameData.point!, otherFrameData.point!);
+  vector_similar_to_vector(frameData.xaxis!, otherFrameData.xaxis!);
+  vector_similar_to_vector(frameData.yaxis!, otherFrameData.yaxis!);
+}
+
+function vector_similar_to_vector(
+  vectorData: VectorData,
+  otherVectorData: VectorData,
+) {
+  expect(vectorData.guid).toBe(otherVectorData.guid);
+  expect(vectorData.name).toBe(otherVectorData.name);
+  expect(vectorData.x).toBeCloseTo(otherVectorData.x);
+  expect(vectorData.y).toBeCloseTo(otherVectorData.y);
+  expect(vectorData.z).toBeCloseTo(otherVectorData.z);
+}
+
+function point_similar_to_point(
+  pointData: PointData,
+  otherPointData: PointData,
+) {
+  expect(pointData.guid).toBe(otherPointData.guid);
+  expect(pointData.name).toBe(otherPointData.name);
+  expect(pointData.x).toBeCloseTo(otherPointData.x);
+  expect(pointData.y).toBeCloseTo(otherPointData.y);
+  expect(pointData.z).toBeCloseTo(otherPointData.z);
+}
