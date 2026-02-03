@@ -1,4 +1,5 @@
 // Node/Bun adapter. Exposes core utilities and Node-specific helpers.
+export * from "./converters";
 export { add, getRandomId, greet } from "./internal";
 
 import { randomBytes } from "node:crypto";
