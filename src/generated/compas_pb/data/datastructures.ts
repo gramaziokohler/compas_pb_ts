@@ -38,7 +38,10 @@ function createBaseFaceList(): FaceList {
 }
 
 export const FaceList: MessageFns<FaceList> = {
-  encode(message: FaceList, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: FaceList,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.indices) {
       writer.uint32(v);
@@ -48,7 +51,8 @@ export const FaceList: MessageFns<FaceList> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): FaceList {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaceList();
     while (reader.pos < end) {
@@ -83,7 +87,9 @@ export const FaceList: MessageFns<FaceList> = {
 
   fromJSON(object: any): FaceList {
     return {
-      indices: globalThis.Array.isArray(object?.indices) ? object.indices.map((e: any) => globalThis.Number(e)) : [],
+      indices: globalThis.Array.isArray(object?.indices)
+        ? object.indices.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -110,7 +116,10 @@ function createBaseMeshData(): MeshData {
 }
 
 export const MeshData: MessageFns<MeshData> = {
-  encode(message: MeshData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: MeshData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== undefined) {
       writer.uint32(10).string(message.guid);
     }
@@ -127,7 +136,8 @@ export const MeshData: MessageFns<MeshData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): MeshData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMeshData();
     while (reader.pos < end) {
@@ -181,7 +191,9 @@ export const MeshData: MessageFns<MeshData> = {
       vertices: globalThis.Array.isArray(object?.vertices)
         ? object.vertices.map((e: any) => PointData.fromJSON(e))
         : [],
-      faces: globalThis.Array.isArray(object?.faces) ? object.faces.map((e: any) => FaceList.fromJSON(e)) : [],
+      faces: globalThis.Array.isArray(object?.faces)
+        ? object.faces.map((e: any) => FaceList.fromJSON(e))
+        : [],
     };
   },
 
@@ -209,7 +221,8 @@ export const MeshData: MessageFns<MeshData> = {
     const message = createBaseMeshData();
     message.guid = object.guid ?? undefined;
     message.name = object.name ?? undefined;
-    message.vertices = object.vertices?.map((e) => PointData.fromPartial(e)) || [];
+    message.vertices =
+      object.vertices?.map((e) => PointData.fromPartial(e)) || [];
     message.faces = object.faces?.map((e) => FaceList.fromPartial(e)) || [];
     return message;
   },
@@ -220,7 +233,10 @@ function createBaseFaceData(): FaceData {
 }
 
 export const FaceData: MessageFns<FaceData> = {
-  encode(message: FaceData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: FaceData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.vertexIndices) {
       writer.int32(v);
@@ -230,7 +246,8 @@ export const FaceData: MessageFns<FaceData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): FaceData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaceData();
     while (reader.pos < end) {
@@ -268,8 +285,8 @@ export const FaceData: MessageFns<FaceData> = {
       vertexIndices: globalThis.Array.isArray(object?.vertexIndices)
         ? object.vertexIndices.map((e: any) => globalThis.Number(e))
         : globalThis.Array.isArray(object?.vertex_indices)
-        ? object.vertex_indices.map((e: any) => globalThis.Number(e))
-        : [],
+          ? object.vertex_indices.map((e: any) => globalThis.Number(e))
+          : [],
     };
   },
 
@@ -296,7 +313,10 @@ function createBasePolyhedronData(): PolyhedronData {
 }
 
 export const PolyhedronData: MessageFns<PolyhedronData> = {
-  encode(message: PolyhedronData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PolyhedronData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== undefined) {
       writer.uint32(10).string(message.guid);
     }
@@ -313,7 +333,8 @@ export const PolyhedronData: MessageFns<PolyhedronData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PolyhedronData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePolyhedronData();
     while (reader.pos < end) {
@@ -367,7 +388,9 @@ export const PolyhedronData: MessageFns<PolyhedronData> = {
       vertices: globalThis.Array.isArray(object?.vertices)
         ? object.vertices.map((e: any) => PointData.fromJSON(e))
         : [],
-      faces: globalThis.Array.isArray(object?.faces) ? object.faces.map((e: any) => FaceData.fromJSON(e)) : [],
+      faces: globalThis.Array.isArray(object?.faces)
+        ? object.faces.map((e: any) => FaceData.fromJSON(e))
+        : [],
     };
   },
 
@@ -388,30 +411,49 @@ export const PolyhedronData: MessageFns<PolyhedronData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PolyhedronData>, I>>(base?: I): PolyhedronData {
+  create<I extends Exact<DeepPartial<PolyhedronData>, I>>(
+    base?: I,
+  ): PolyhedronData {
     return PolyhedronData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PolyhedronData>, I>>(object: I): PolyhedronData {
+  fromPartial<I extends Exact<DeepPartial<PolyhedronData>, I>>(
+    object: I,
+  ): PolyhedronData {
     const message = createBasePolyhedronData();
     message.guid = object.guid ?? undefined;
     message.name = object.name ?? undefined;
-    message.vertices = object.vertices?.map((e) => PointData.fromPartial(e)) || [];
+    message.vertices =
+      object.vertices?.map((e) => PointData.fromPartial(e)) || [];
     message.faces = object.faces?.map((e) => FaceData.fromPartial(e)) || [];
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

@@ -3,7 +3,7 @@ import { Point } from "./point";
 import { Vector } from "./vector";
 import * as THREE from "three";
 
-class Plane {
+export class Plane {
   public readonly data: PlaneData;
   private _point?: Point;
   private _normal?: Vector;

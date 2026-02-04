@@ -48,7 +48,10 @@ function createBaseAnyData(): AnyData {
 }
 
 export const AnyData: MessageFns<AnyData> = {
-  encode(message: AnyData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: AnyData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.message !== undefined) {
       Any.encode(message.message, writer.uint32(10).fork()).join();
     }
@@ -62,7 +65,8 @@ export const AnyData: MessageFns<AnyData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): AnyData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAnyData();
     while (reader.pos < end) {
@@ -105,7 +109,9 @@ export const AnyData: MessageFns<AnyData> = {
     return {
       message: isSet(object.message) ? Any.fromJSON(object.message) : undefined,
       value: isSet(object?.value) ? object.value : undefined,
-      fallback: isSet(object.fallback) ? FallbackData.fromJSON(object.fallback) : undefined,
+      fallback: isSet(object.fallback)
+        ? FallbackData.fromJSON(object.fallback)
+        : undefined,
     };
   },
 
@@ -128,13 +134,15 @@ export const AnyData: MessageFns<AnyData> = {
   },
   fromPartial<I extends Exact<DeepPartial<AnyData>, I>>(object: I): AnyData {
     const message = createBaseAnyData();
-    message.message = (object.message !== undefined && object.message !== null)
-      ? Any.fromPartial(object.message)
-      : undefined;
+    message.message =
+      object.message !== undefined && object.message !== null
+        ? Any.fromPartial(object.message)
+        : undefined;
     message.value = object.value ?? undefined;
-    message.fallback = (object.fallback !== undefined && object.fallback !== null)
-      ? FallbackData.fromPartial(object.fallback)
-      : undefined;
+    message.fallback =
+      object.fallback !== undefined && object.fallback !== null
+        ? FallbackData.fromPartial(object.fallback)
+        : undefined;
     return message;
   },
 };
@@ -144,7 +152,10 @@ function createBaseFallbackData(): FallbackData {
 }
 
 export const FallbackData: MessageFns<FallbackData> = {
-  encode(message: FallbackData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: FallbackData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.data !== undefined) {
       DictData.encode(message.data, writer.uint32(10).fork()).join();
     }
@@ -152,7 +163,8 @@ export const FallbackData: MessageFns<FallbackData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): FallbackData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFallbackData();
     while (reader.pos < end) {
@@ -176,7 +188,9 @@ export const FallbackData: MessageFns<FallbackData> = {
   },
 
   fromJSON(object: any): FallbackData {
-    return { data: isSet(object.data) ? DictData.fromJSON(object.data) : undefined };
+    return {
+      data: isSet(object.data) ? DictData.fromJSON(object.data) : undefined,
+    };
   },
 
   toJSON(message: FallbackData): unknown {
@@ -187,12 +201,19 @@ export const FallbackData: MessageFns<FallbackData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FallbackData>, I>>(base?: I): FallbackData {
+  create<I extends Exact<DeepPartial<FallbackData>, I>>(
+    base?: I,
+  ): FallbackData {
     return FallbackData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<FallbackData>, I>>(object: I): FallbackData {
+  fromPartial<I extends Exact<DeepPartial<FallbackData>, I>>(
+    object: I,
+  ): FallbackData {
     const message = createBaseFallbackData();
-    message.data = (object.data !== undefined && object.data !== null) ? DictData.fromPartial(object.data) : undefined;
+    message.data =
+      object.data !== undefined && object.data !== null
+        ? DictData.fromPartial(object.data)
+        : undefined;
     return message;
   },
 };
@@ -202,7 +223,10 @@ function createBaseListData(): ListData {
 }
 
 export const ListData: MessageFns<ListData> = {
-  encode(message: ListData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ListData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     for (const v of message.items) {
       AnyData.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -210,7 +234,8 @@ export const ListData: MessageFns<ListData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ListData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseListData();
     while (reader.pos < end) {
@@ -234,7 +259,11 @@ export const ListData: MessageFns<ListData> = {
   },
 
   fromJSON(object: any): ListData {
-    return { items: globalThis.Array.isArray(object?.items) ? object.items.map((e: any) => AnyData.fromJSON(e)) : [] };
+    return {
+      items: globalThis.Array.isArray(object?.items)
+        ? object.items.map((e: any) => AnyData.fromJSON(e))
+        : [],
+    };
   },
 
   toJSON(message: ListData): unknown {
@@ -260,15 +289,24 @@ function createBaseDictData(): DictData {
 }
 
 export const DictData: MessageFns<DictData> = {
-  encode(message: DictData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    globalThis.Object.entries(message.items).forEach(([key, value]: [string, AnyData]) => {
-      DictData_ItemsEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).join();
-    });
+  encode(
+    message: DictData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    globalThis.Object.entries(message.items).forEach(
+      ([key, value]: [string, AnyData]) => {
+        DictData_ItemsEntry.encode(
+          { key: key as any, value },
+          writer.uint32(10).fork(),
+        ).join();
+      },
+    );
     return writer;
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): DictData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDictData();
     while (reader.pos < end) {
@@ -298,12 +336,12 @@ export const DictData: MessageFns<DictData> = {
     return {
       items: isObject(object.items)
         ? (globalThis.Object.entries(object.items) as [string, any][]).reduce(
-          (acc: { [key: string]: AnyData }, [key, value]: [string, any]) => {
-            acc[key] = AnyData.fromJSON(value);
-            return acc;
-          },
-          {},
-        )
+            (acc: { [key: string]: AnyData }, [key, value]: [string, any]) => {
+              acc[key] = AnyData.fromJSON(value);
+              return acc;
+            },
+            {},
+          )
         : {},
     };
   },
@@ -311,7 +349,10 @@ export const DictData: MessageFns<DictData> = {
   toJSON(message: DictData): unknown {
     const obj: any = {};
     if (message.items) {
-      const entries = globalThis.Object.entries(message.items) as [string, AnyData][];
+      const entries = globalThis.Object.entries(message.items) as [
+        string,
+        AnyData,
+      ][];
       if (entries.length > 0) {
         obj.items = {};
         entries.forEach(([k, v]) => {
@@ -327,7 +368,9 @@ export const DictData: MessageFns<DictData> = {
   },
   fromPartial<I extends Exact<DeepPartial<DictData>, I>>(object: I): DictData {
     const message = createBaseDictData();
-    message.items = (globalThis.Object.entries(object.items ?? {}) as [string, AnyData][]).reduce(
+    message.items = (
+      globalThis.Object.entries(object.items ?? {}) as [string, AnyData][]
+    ).reduce(
       (acc: { [key: string]: AnyData }, [key, value]: [string, AnyData]) => {
         if (value !== undefined) {
           acc[key] = AnyData.fromPartial(value);
@@ -345,7 +388,10 @@ function createBaseDictData_ItemsEntry(): DictData_ItemsEntry {
 }
 
 export const DictData_ItemsEntry: MessageFns<DictData_ItemsEntry> = {
-  encode(message: DictData_ItemsEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: DictData_ItemsEntry,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.key !== "") {
       writer.uint32(10).string(message.key);
     }
@@ -355,8 +401,12 @@ export const DictData_ItemsEntry: MessageFns<DictData_ItemsEntry> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): DictData_ItemsEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): DictData_ItemsEntry {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDictData_ItemsEntry();
     while (reader.pos < end) {
@@ -405,15 +455,20 @@ export const DictData_ItemsEntry: MessageFns<DictData_ItemsEntry> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DictData_ItemsEntry>, I>>(base?: I): DictData_ItemsEntry {
+  create<I extends Exact<DeepPartial<DictData_ItemsEntry>, I>>(
+    base?: I,
+  ): DictData_ItemsEntry {
     return DictData_ItemsEntry.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DictData_ItemsEntry>, I>>(object: I): DictData_ItemsEntry {
+  fromPartial<I extends Exact<DeepPartial<DictData_ItemsEntry>, I>>(
+    object: I,
+  ): DictData_ItemsEntry {
     const message = createBaseDictData_ItemsEntry();
     message.key = object.key ?? "";
-    message.value = (object.value !== undefined && object.value !== null)
-      ? AnyData.fromPartial(object.value)
-      : undefined;
+    message.value =
+      object.value !== undefined && object.value !== null
+        ? AnyData.fromPartial(object.value)
+        : undefined;
     return message;
   },
 };
@@ -423,7 +478,10 @@ function createBaseMessageData(): MessageData {
 }
 
 export const MessageData: MessageFns<MessageData> = {
-  encode(message: MessageData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: MessageData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.data !== undefined) {
       AnyData.encode(message.data, writer.uint32(10).fork()).join();
     }
@@ -434,7 +492,8 @@ export const MessageData: MessageFns<MessageData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): MessageData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMessageData();
     while (reader.pos < end) {
@@ -468,7 +527,9 @@ export const MessageData: MessageFns<MessageData> = {
   fromJSON(object: any): MessageData {
     return {
       data: isSet(object.data) ? AnyData.fromJSON(object.data) : undefined,
-      version: isSet(object.version) ? globalThis.String(object.version) : undefined,
+      version: isSet(object.version)
+        ? globalThis.String(object.version)
+        : undefined,
     };
   },
 
@@ -486,25 +547,44 @@ export const MessageData: MessageFns<MessageData> = {
   create<I extends Exact<DeepPartial<MessageData>, I>>(base?: I): MessageData {
     return MessageData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<MessageData>, I>>(object: I): MessageData {
+  fromPartial<I extends Exact<DeepPartial<MessageData>, I>>(
+    object: I,
+  ): MessageData {
     const message = createBaseMessageData();
-    message.data = (object.data !== undefined && object.data !== null) ? AnyData.fromPartial(object.data) : undefined;
+    message.data =
+      object.data !== undefined && object.data !== null
+        ? AnyData.fromPartial(object.data)
+        : undefined;
     message.version = object.version ?? undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isObject(value: any): boolean {
   return typeof value === "object" && value !== null;
