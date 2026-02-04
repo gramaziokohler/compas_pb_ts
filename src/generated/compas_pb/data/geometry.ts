@@ -224,7 +224,10 @@ function createBasePointData(): PointData {
 }
 
 export const PointData: MessageFns<PointData> = {
-  encode(message: PointData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PointData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -244,7 +247,8 @@ export const PointData: MessageFns<PointData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PointData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePointData();
     while (reader.pos < end) {
@@ -332,7 +336,9 @@ export const PointData: MessageFns<PointData> = {
   create<I extends Exact<DeepPartial<PointData>, I>>(base?: I): PointData {
     return PointData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PointData>, I>>(object: I): PointData {
+  fromPartial<I extends Exact<DeepPartial<PointData>, I>>(
+    object: I,
+  ): PointData {
     const message = createBasePointData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -348,7 +354,10 @@ function createBaseVectorData(): VectorData {
 }
 
 export const VectorData: MessageFns<VectorData> = {
-  encode(message: VectorData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: VectorData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -368,7 +377,8 @@ export const VectorData: MessageFns<VectorData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): VectorData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVectorData();
     while (reader.pos < end) {
@@ -456,7 +466,9 @@ export const VectorData: MessageFns<VectorData> = {
   create<I extends Exact<DeepPartial<VectorData>, I>>(base?: I): VectorData {
     return VectorData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<VectorData>, I>>(object: I): VectorData {
+  fromPartial<I extends Exact<DeepPartial<VectorData>, I>>(
+    object: I,
+  ): VectorData {
     const message = createBaseVectorData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -468,11 +480,20 @@ export const VectorData: MessageFns<VectorData> = {
 };
 
 function createBaseFrameData(): FrameData {
-  return { guid: "", name: "", point: undefined, xaxis: undefined, yaxis: undefined };
+  return {
+    guid: "",
+    name: "",
+    point: undefined,
+    xaxis: undefined,
+    yaxis: undefined,
+  };
 }
 
 export const FrameData: MessageFns<FrameData> = {
-  encode(message: FrameData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: FrameData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -492,7 +513,8 @@ export const FrameData: MessageFns<FrameData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): FrameData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFrameData();
     while (reader.pos < end) {
@@ -552,8 +574,12 @@ export const FrameData: MessageFns<FrameData> = {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       point: isSet(object.point) ? PointData.fromJSON(object.point) : undefined,
-      xaxis: isSet(object.xaxis) ? VectorData.fromJSON(object.xaxis) : undefined,
-      yaxis: isSet(object.yaxis) ? VectorData.fromJSON(object.yaxis) : undefined,
+      xaxis: isSet(object.xaxis)
+        ? VectorData.fromJSON(object.xaxis)
+        : undefined,
+      yaxis: isSet(object.yaxis)
+        ? VectorData.fromJSON(object.yaxis)
+        : undefined,
     };
   },
 
@@ -580,19 +606,24 @@ export const FrameData: MessageFns<FrameData> = {
   create<I extends Exact<DeepPartial<FrameData>, I>>(base?: I): FrameData {
     return FrameData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<FrameData>, I>>(object: I): FrameData {
+  fromPartial<I extends Exact<DeepPartial<FrameData>, I>>(
+    object: I,
+  ): FrameData {
     const message = createBaseFrameData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.point = (object.point !== undefined && object.point !== null)
-      ? PointData.fromPartial(object.point)
-      : undefined;
-    message.xaxis = (object.xaxis !== undefined && object.xaxis !== null)
-      ? VectorData.fromPartial(object.xaxis)
-      : undefined;
-    message.yaxis = (object.yaxis !== undefined && object.yaxis !== null)
-      ? VectorData.fromPartial(object.yaxis)
-      : undefined;
+    message.point =
+      object.point !== undefined && object.point !== null
+        ? PointData.fromPartial(object.point)
+        : undefined;
+    message.xaxis =
+      object.xaxis !== undefined && object.xaxis !== null
+        ? VectorData.fromPartial(object.xaxis)
+        : undefined;
+    message.yaxis =
+      object.yaxis !== undefined && object.yaxis !== null
+        ? VectorData.fromPartial(object.yaxis)
+        : undefined;
     return message;
   },
 };
@@ -602,7 +633,10 @@ function createBasePlaneData(): PlaneData {
 }
 
 export const PlaneData: MessageFns<PlaneData> = {
-  encode(message: PlaneData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PlaneData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -619,7 +653,8 @@ export const PlaneData: MessageFns<PlaneData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PlaneData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePlaneData();
     while (reader.pos < end) {
@@ -671,7 +706,9 @@ export const PlaneData: MessageFns<PlaneData> = {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       point: isSet(object.point) ? PointData.fromJSON(object.point) : undefined,
-      normal: isSet(object.normal) ? VectorData.fromJSON(object.normal) : undefined,
+      normal: isSet(object.normal)
+        ? VectorData.fromJSON(object.normal)
+        : undefined,
     };
   },
 
@@ -695,16 +732,20 @@ export const PlaneData: MessageFns<PlaneData> = {
   create<I extends Exact<DeepPartial<PlaneData>, I>>(base?: I): PlaneData {
     return PlaneData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PlaneData>, I>>(object: I): PlaneData {
+  fromPartial<I extends Exact<DeepPartial<PlaneData>, I>>(
+    object: I,
+  ): PlaneData {
     const message = createBasePlaneData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.point = (object.point !== undefined && object.point !== null)
-      ? PointData.fromPartial(object.point)
-      : undefined;
-    message.normal = (object.normal !== undefined && object.normal !== null)
-      ? VectorData.fromPartial(object.normal)
-      : undefined;
+    message.point =
+      object.point !== undefined && object.point !== null
+        ? PointData.fromPartial(object.point)
+        : undefined;
+    message.normal =
+      object.normal !== undefined && object.normal !== null
+        ? VectorData.fromPartial(object.normal)
+        : undefined;
     return message;
   },
 };
@@ -714,7 +755,10 @@ function createBaseQuaternionData(): QuaternionData {
 }
 
 export const QuaternionData: MessageFns<QuaternionData> = {
-  encode(message: QuaternionData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: QuaternionData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -737,7 +781,8 @@ export const QuaternionData: MessageFns<QuaternionData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): QuaternionData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuaternionData();
     while (reader.pos < end) {
@@ -834,10 +879,14 @@ export const QuaternionData: MessageFns<QuaternionData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<QuaternionData>, I>>(base?: I): QuaternionData {
+  create<I extends Exact<DeepPartial<QuaternionData>, I>>(
+    base?: I,
+  ): QuaternionData {
     return QuaternionData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<QuaternionData>, I>>(object: I): QuaternionData {
+  fromPartial<I extends Exact<DeepPartial<QuaternionData>, I>>(
+    object: I,
+  ): QuaternionData {
     const message = createBaseQuaternionData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -854,7 +903,10 @@ function createBaseLineData(): LineData {
 }
 
 export const LineData: MessageFns<LineData> = {
-  encode(message: LineData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: LineData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -871,7 +923,8 @@ export const LineData: MessageFns<LineData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): LineData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLineData();
     while (reader.pos < end) {
@@ -951,10 +1004,14 @@ export const LineData: MessageFns<LineData> = {
     const message = createBaseLineData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.start = (object.start !== undefined && object.start !== null)
-      ? PointData.fromPartial(object.start)
-      : undefined;
-    message.end = (object.end !== undefined && object.end !== null) ? PointData.fromPartial(object.end) : undefined;
+    message.start =
+      object.start !== undefined && object.start !== null
+        ? PointData.fromPartial(object.start)
+        : undefined;
+    message.end =
+      object.end !== undefined && object.end !== null
+        ? PointData.fromPartial(object.end)
+        : undefined;
     return message;
   },
 };
@@ -964,7 +1021,10 @@ function createBaseCircleData(): CircleData {
 }
 
 export const CircleData: MessageFns<CircleData> = {
-  encode(message: CircleData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CircleData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -981,7 +1041,8 @@ export const CircleData: MessageFns<CircleData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CircleData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCircleData();
     while (reader.pos < end) {
@@ -1057,14 +1118,17 @@ export const CircleData: MessageFns<CircleData> = {
   create<I extends Exact<DeepPartial<CircleData>, I>>(base?: I): CircleData {
     return CircleData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CircleData>, I>>(object: I): CircleData {
+  fromPartial<I extends Exact<DeepPartial<CircleData>, I>>(
+    object: I,
+  ): CircleData {
     const message = createBaseCircleData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.radius = object.radius ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -1074,7 +1138,10 @@ function createBaseArcData(): ArcData {
 }
 
 export const ArcData: MessageFns<ArcData> = {
-  encode(message: ArcData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ArcData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1094,7 +1161,8 @@ export const ArcData: MessageFns<ArcData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ArcData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseArcData();
     while (reader.pos < end) {
@@ -1153,17 +1221,19 @@ export const ArcData: MessageFns<ArcData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      circle: isSet(object.circle) ? CircleData.fromJSON(object.circle) : undefined,
+      circle: isSet(object.circle)
+        ? CircleData.fromJSON(object.circle)
+        : undefined,
       startAngle: isSet(object.startAngle)
         ? globalThis.Number(object.startAngle)
         : isSet(object.start_angle)
-        ? globalThis.Number(object.start_angle)
-        : 0,
+          ? globalThis.Number(object.start_angle)
+          : 0,
       endAngle: isSet(object.endAngle)
         ? globalThis.Number(object.endAngle)
         : isSet(object.end_angle)
-        ? globalThis.Number(object.end_angle)
-        : 0,
+          ? globalThis.Number(object.end_angle)
+          : 0,
     };
   },
 
@@ -1194,9 +1264,10 @@ export const ArcData: MessageFns<ArcData> = {
     const message = createBaseArcData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.circle = (object.circle !== undefined && object.circle !== null)
-      ? CircleData.fromPartial(object.circle)
-      : undefined;
+    message.circle =
+      object.circle !== undefined && object.circle !== null
+        ? CircleData.fromPartial(object.circle)
+        : undefined;
     message.startAngle = object.startAngle ?? 0;
     message.endAngle = object.endAngle ?? 0;
     return message;
@@ -1208,7 +1279,10 @@ function createBaseEllipseData(): EllipseData {
 }
 
 export const EllipseData: MessageFns<EllipseData> = {
-  encode(message: EllipseData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: EllipseData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1228,7 +1302,8 @@ export const EllipseData: MessageFns<EllipseData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): EllipseData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEllipseData();
     while (reader.pos < end) {
@@ -1316,15 +1391,18 @@ export const EllipseData: MessageFns<EllipseData> = {
   create<I extends Exact<DeepPartial<EllipseData>, I>>(base?: I): EllipseData {
     return EllipseData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<EllipseData>, I>>(object: I): EllipseData {
+  fromPartial<I extends Exact<DeepPartial<EllipseData>, I>>(
+    object: I,
+  ): EllipseData {
     const message = createBaseEllipseData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.major = object.major ?? 0;
     message.minor = object.minor ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -1334,7 +1412,10 @@ function createBaseParabolaData(): ParabolaData {
 }
 
 export const ParabolaData: MessageFns<ParabolaData> = {
-  encode(message: ParabolaData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ParabolaData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1351,7 +1432,8 @@ export const ParabolaData: MessageFns<ParabolaData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ParabolaData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParabolaData();
     while (reader.pos < end) {
@@ -1424,17 +1506,22 @@ export const ParabolaData: MessageFns<ParabolaData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ParabolaData>, I>>(base?: I): ParabolaData {
+  create<I extends Exact<DeepPartial<ParabolaData>, I>>(
+    base?: I,
+  ): ParabolaData {
     return ParabolaData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ParabolaData>, I>>(object: I): ParabolaData {
+  fromPartial<I extends Exact<DeepPartial<ParabolaData>, I>>(
+    object: I,
+  ): ParabolaData {
     const message = createBaseParabolaData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.focal = object.focal ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -1444,7 +1531,10 @@ function createBaseHyperbolaData(): HyperbolaData {
 }
 
 export const HyperbolaData: MessageFns<HyperbolaData> = {
-  encode(message: HyperbolaData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: HyperbolaData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1464,7 +1554,8 @@ export const HyperbolaData: MessageFns<HyperbolaData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): HyperbolaData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHyperbolaData();
     while (reader.pos < end) {
@@ -1549,18 +1640,23 @@ export const HyperbolaData: MessageFns<HyperbolaData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<HyperbolaData>, I>>(base?: I): HyperbolaData {
+  create<I extends Exact<DeepPartial<HyperbolaData>, I>>(
+    base?: I,
+  ): HyperbolaData {
     return HyperbolaData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<HyperbolaData>, I>>(object: I): HyperbolaData {
+  fromPartial<I extends Exact<DeepPartial<HyperbolaData>, I>>(
+    object: I,
+  ): HyperbolaData {
     const message = createBaseHyperbolaData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.major = object.major ?? 0;
     message.minor = object.minor ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -1570,7 +1666,10 @@ function createBaseBezierData(): BezierData {
 }
 
 export const BezierData: MessageFns<BezierData> = {
-  encode(message: BezierData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: BezierData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1587,7 +1686,8 @@ export const BezierData: MessageFns<BezierData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): BezierData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBezierData();
     while (reader.pos < end) {
@@ -1638,7 +1738,9 @@ export const BezierData: MessageFns<BezierData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      points: globalThis.Array.isArray(object?.points) ? object.points.map((e: any) => PointData.fromJSON(e)) : [],
+      points: globalThis.Array.isArray(object?.points)
+        ? object.points.map((e: any) => PointData.fromJSON(e))
+        : [],
       degree: isSet(object.degree) ? globalThis.Number(object.degree) : 0,
     };
   },
@@ -1663,7 +1765,9 @@ export const BezierData: MessageFns<BezierData> = {
   create<I extends Exact<DeepPartial<BezierData>, I>>(base?: I): BezierData {
     return BezierData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<BezierData>, I>>(object: I): BezierData {
+  fromPartial<I extends Exact<DeepPartial<BezierData>, I>>(
+    object: I,
+  ): BezierData {
     const message = createBaseBezierData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -1678,7 +1782,10 @@ function createBasePolylineData(): PolylineData {
 }
 
 export const PolylineData: MessageFns<PolylineData> = {
-  encode(message: PolylineData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PolylineData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1692,7 +1799,8 @@ export const PolylineData: MessageFns<PolylineData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PolylineData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePolylineData();
     while (reader.pos < end) {
@@ -1735,7 +1843,9 @@ export const PolylineData: MessageFns<PolylineData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      points: globalThis.Array.isArray(object?.points) ? object.points.map((e: any) => PointData.fromJSON(e)) : [],
+      points: globalThis.Array.isArray(object?.points)
+        ? object.points.map((e: any) => PointData.fromJSON(e))
+        : [],
     };
   },
 
@@ -1753,10 +1863,14 @@ export const PolylineData: MessageFns<PolylineData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PolylineData>, I>>(base?: I): PolylineData {
+  create<I extends Exact<DeepPartial<PolylineData>, I>>(
+    base?: I,
+  ): PolylineData {
     return PolylineData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PolylineData>, I>>(object: I): PolylineData {
+  fromPartial<I extends Exact<DeepPartial<PolylineData>, I>>(
+    object: I,
+  ): PolylineData {
     const message = createBasePolylineData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -1770,7 +1884,10 @@ function createBasePolygonData(): PolygonData {
 }
 
 export const PolygonData: MessageFns<PolygonData> = {
-  encode(message: PolygonData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PolygonData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1784,7 +1901,8 @@ export const PolygonData: MessageFns<PolygonData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PolygonData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePolygonData();
     while (reader.pos < end) {
@@ -1827,7 +1945,9 @@ export const PolygonData: MessageFns<PolygonData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      points: globalThis.Array.isArray(object?.points) ? object.points.map((e: any) => PointData.fromJSON(e)) : [],
+      points: globalThis.Array.isArray(object?.points)
+        ? object.points.map((e: any) => PointData.fromJSON(e))
+        : [],
     };
   },
 
@@ -1848,7 +1968,9 @@ export const PolygonData: MessageFns<PolygonData> = {
   create<I extends Exact<DeepPartial<PolygonData>, I>>(base?: I): PolygonData {
     return PolygonData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PolygonData>, I>>(object: I): PolygonData {
+  fromPartial<I extends Exact<DeepPartial<PolygonData>, I>>(
+    object: I,
+  ): PolygonData {
     const message = createBasePolygonData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -1862,7 +1984,10 @@ function createBaseBoxData(): BoxData {
 }
 
 export const BoxData: MessageFns<BoxData> = {
-  encode(message: BoxData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: BoxData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -1885,7 +2010,8 @@ export const BoxData: MessageFns<BoxData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): BoxData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBoxData();
     while (reader.pos < end) {
@@ -1989,9 +2115,10 @@ export const BoxData: MessageFns<BoxData> = {
     const message = createBaseBoxData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     message.xsize = object.xsize ?? 0;
     message.ysize = object.ysize ?? 0;
     message.zsize = object.zsize ?? 0;
@@ -2004,7 +2131,10 @@ function createBaseSphereData(): SphereData {
 }
 
 export const SphereData: MessageFns<SphereData> = {
-  encode(message: SphereData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: SphereData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2021,7 +2151,8 @@ export const SphereData: MessageFns<SphereData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): SphereData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSphereData();
     while (reader.pos < end) {
@@ -2097,14 +2228,17 @@ export const SphereData: MessageFns<SphereData> = {
   create<I extends Exact<DeepPartial<SphereData>, I>>(base?: I): SphereData {
     return SphereData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<SphereData>, I>>(object: I): SphereData {
+  fromPartial<I extends Exact<DeepPartial<SphereData>, I>>(
+    object: I,
+  ): SphereData {
     const message = createBaseSphereData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.radius = object.radius ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -2114,7 +2248,10 @@ function createBaseCylinderData(): CylinderData {
 }
 
 export const CylinderData: MessageFns<CylinderData> = {
-  encode(message: CylinderData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CylinderData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2134,7 +2271,8 @@ export const CylinderData: MessageFns<CylinderData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CylinderData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCylinderData();
     while (reader.pos < end) {
@@ -2219,18 +2357,23 @@ export const CylinderData: MessageFns<CylinderData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CylinderData>, I>>(base?: I): CylinderData {
+  create<I extends Exact<DeepPartial<CylinderData>, I>>(
+    base?: I,
+  ): CylinderData {
     return CylinderData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CylinderData>, I>>(object: I): CylinderData {
+  fromPartial<I extends Exact<DeepPartial<CylinderData>, I>>(
+    object: I,
+  ): CylinderData {
     const message = createBaseCylinderData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.radius = object.radius ?? 0;
     message.height = object.height ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -2240,7 +2383,10 @@ function createBaseConeData(): ConeData {
 }
 
 export const ConeData: MessageFns<ConeData> = {
-  encode(message: ConeData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ConeData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2260,7 +2406,8 @@ export const ConeData: MessageFns<ConeData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ConeData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConeData();
     while (reader.pos < end) {
@@ -2354,9 +2501,10 @@ export const ConeData: MessageFns<ConeData> = {
     message.name = object.name ?? "";
     message.radius = object.radius ?? 0;
     message.height = object.height ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -2366,7 +2514,10 @@ function createBaseCapsuleData(): CapsuleData {
 }
 
 export const CapsuleData: MessageFns<CapsuleData> = {
-  encode(message: CapsuleData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: CapsuleData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2386,7 +2537,8 @@ export const CapsuleData: MessageFns<CapsuleData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): CapsuleData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCapsuleData();
     while (reader.pos < end) {
@@ -2474,15 +2626,18 @@ export const CapsuleData: MessageFns<CapsuleData> = {
   create<I extends Exact<DeepPartial<CapsuleData>, I>>(base?: I): CapsuleData {
     return CapsuleData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<CapsuleData>, I>>(object: I): CapsuleData {
+  fromPartial<I extends Exact<DeepPartial<CapsuleData>, I>>(
+    object: I,
+  ): CapsuleData {
     const message = createBaseCapsuleData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.radius = object.radius ?? 0;
     message.height = object.height ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -2492,7 +2647,10 @@ function createBaseTorusData(): TorusData {
 }
 
 export const TorusData: MessageFns<TorusData> = {
-  encode(message: TorusData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: TorusData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2512,7 +2670,8 @@ export const TorusData: MessageFns<TorusData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): TorusData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTorusData();
     while (reader.pos < end) {
@@ -2574,13 +2733,13 @@ export const TorusData: MessageFns<TorusData> = {
       radiusAxis: isSet(object.radiusAxis)
         ? globalThis.Number(object.radiusAxis)
         : isSet(object.radius_axis)
-        ? globalThis.Number(object.radius_axis)
-        : 0,
+          ? globalThis.Number(object.radius_axis)
+          : 0,
       radiusPipe: isSet(object.radiusPipe)
         ? globalThis.Number(object.radiusPipe)
         : isSet(object.radius_pipe)
-        ? globalThis.Number(object.radius_pipe)
-        : 0,
+          ? globalThis.Number(object.radius_pipe)
+          : 0,
       frame: isSet(object.frame) ? FrameData.fromJSON(object.frame) : undefined,
     };
   },
@@ -2608,15 +2767,18 @@ export const TorusData: MessageFns<TorusData> = {
   create<I extends Exact<DeepPartial<TorusData>, I>>(base?: I): TorusData {
     return TorusData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<TorusData>, I>>(object: I): TorusData {
+  fromPartial<I extends Exact<DeepPartial<TorusData>, I>>(
+    object: I,
+  ): TorusData {
     const message = createBaseTorusData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
     message.radiusAxis = object.radiusAxis ?? 0;
     message.radiusPipe = object.radiusPipe ?? 0;
-    message.frame = (object.frame !== undefined && object.frame !== null)
-      ? FrameData.fromPartial(object.frame)
-      : undefined;
+    message.frame =
+      object.frame !== undefined && object.frame !== null
+        ? FrameData.fromPartial(object.frame)
+        : undefined;
     return message;
   },
 };
@@ -2626,7 +2788,10 @@ function createBasePointcloudData(): PointcloudData {
 }
 
 export const PointcloudData: MessageFns<PointcloudData> = {
-  encode(message: PointcloudData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: PointcloudData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2640,7 +2805,8 @@ export const PointcloudData: MessageFns<PointcloudData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): PointcloudData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePointcloudData();
     while (reader.pos < end) {
@@ -2683,7 +2849,9 @@ export const PointcloudData: MessageFns<PointcloudData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      points: globalThis.Array.isArray(object?.points) ? object.points.map((e: any) => PointData.fromJSON(e)) : [],
+      points: globalThis.Array.isArray(object?.points)
+        ? object.points.map((e: any) => PointData.fromJSON(e))
+        : [],
     };
   },
 
@@ -2701,10 +2869,14 @@ export const PointcloudData: MessageFns<PointcloudData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<PointcloudData>, I>>(base?: I): PointcloudData {
+  create<I extends Exact<DeepPartial<PointcloudData>, I>>(
+    base?: I,
+  ): PointcloudData {
     return PointcloudData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<PointcloudData>, I>>(object: I): PointcloudData {
+  fromPartial<I extends Exact<DeepPartial<PointcloudData>, I>>(
+    object: I,
+  ): PointcloudData {
     const message = createBasePointcloudData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -2718,7 +2890,10 @@ function createBaseTransformationData(): TransformationData {
 }
 
 export const TransformationData: MessageFns<TransformationData> = {
-  encode(message: TransformationData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: TransformationData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2733,8 +2908,12 @@ export const TransformationData: MessageFns<TransformationData> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): TransformationData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number,
+  ): TransformationData {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTransformationData();
     while (reader.pos < end) {
@@ -2787,7 +2966,9 @@ export const TransformationData: MessageFns<TransformationData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      matrix: globalThis.Array.isArray(object?.matrix) ? object.matrix.map((e: any) => globalThis.Number(e)) : [],
+      matrix: globalThis.Array.isArray(object?.matrix)
+        ? object.matrix.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -2805,10 +2986,14 @@ export const TransformationData: MessageFns<TransformationData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<TransformationData>, I>>(base?: I): TransformationData {
+  create<I extends Exact<DeepPartial<TransformationData>, I>>(
+    base?: I,
+  ): TransformationData {
     return TransformationData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<TransformationData>, I>>(object: I): TransformationData {
+  fromPartial<I extends Exact<DeepPartial<TransformationData>, I>>(
+    object: I,
+  ): TransformationData {
     const message = createBaseTransformationData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -2822,7 +3007,10 @@ function createBaseTranslationData(): TranslationData {
 }
 
 export const TranslationData: MessageFns<TranslationData> = {
-  encode(message: TranslationData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: TranslationData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2830,13 +3018,17 @@ export const TranslationData: MessageFns<TranslationData> = {
       writer.uint32(18).string(message.name);
     }
     if (message.translationVector !== undefined) {
-      VectorData.encode(message.translationVector, writer.uint32(26).fork()).join();
+      VectorData.encode(
+        message.translationVector,
+        writer.uint32(26).fork(),
+      ).join();
     }
     return writer;
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): TranslationData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTranslationData();
     while (reader.pos < end) {
@@ -2863,7 +3055,10 @@ export const TranslationData: MessageFns<TranslationData> = {
             break;
           }
 
-          message.translationVector = VectorData.decode(reader, reader.uint32());
+          message.translationVector = VectorData.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         }
       }
@@ -2882,8 +3077,8 @@ export const TranslationData: MessageFns<TranslationData> = {
       translationVector: isSet(object.translationVector)
         ? VectorData.fromJSON(object.translationVector)
         : isSet(object.translation_vector)
-        ? VectorData.fromJSON(object.translation_vector)
-        : undefined,
+          ? VectorData.fromJSON(object.translation_vector)
+          : undefined,
     };
   },
 
@@ -2901,16 +3096,22 @@ export const TranslationData: MessageFns<TranslationData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<TranslationData>, I>>(base?: I): TranslationData {
+  create<I extends Exact<DeepPartial<TranslationData>, I>>(
+    base?: I,
+  ): TranslationData {
     return TranslationData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<TranslationData>, I>>(object: I): TranslationData {
+  fromPartial<I extends Exact<DeepPartial<TranslationData>, I>>(
+    object: I,
+  ): TranslationData {
     const message = createBaseTranslationData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.translationVector = (object.translationVector !== undefined && object.translationVector !== null)
-      ? VectorData.fromPartial(object.translationVector)
-      : undefined;
+    message.translationVector =
+      object.translationVector !== undefined &&
+      object.translationVector !== null
+        ? VectorData.fromPartial(object.translationVector)
+        : undefined;
     return message;
   },
 };
@@ -2920,7 +3121,10 @@ function createBaseRotationData(): RotationData {
 }
 
 export const RotationData: MessageFns<RotationData> = {
-  encode(message: RotationData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: RotationData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -2940,7 +3144,8 @@ export const RotationData: MessageFns<RotationData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): RotationData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRotationData();
     while (reader.pos < end) {
@@ -3025,20 +3230,26 @@ export const RotationData: MessageFns<RotationData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<RotationData>, I>>(base?: I): RotationData {
+  create<I extends Exact<DeepPartial<RotationData>, I>>(
+    base?: I,
+  ): RotationData {
     return RotationData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<RotationData>, I>>(object: I): RotationData {
+  fromPartial<I extends Exact<DeepPartial<RotationData>, I>>(
+    object: I,
+  ): RotationData {
     const message = createBaseRotationData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
-    message.axis = (object.axis !== undefined && object.axis !== null)
-      ? VectorData.fromPartial(object.axis)
-      : undefined;
+    message.axis =
+      object.axis !== undefined && object.axis !== null
+        ? VectorData.fromPartial(object.axis)
+        : undefined;
     message.angle = object.angle ?? 0;
-    message.point = (object.point !== undefined && object.point !== null)
-      ? PointData.fromPartial(object.point)
-      : undefined;
+    message.point =
+      object.point !== undefined && object.point !== null
+        ? PointData.fromPartial(object.point)
+        : undefined;
     return message;
   },
 };
@@ -3048,7 +3259,10 @@ function createBaseScaleData(): ScaleData {
 }
 
 export const ScaleData: MessageFns<ScaleData> = {
-  encode(message: ScaleData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ScaleData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -3064,7 +3278,8 @@ export const ScaleData: MessageFns<ScaleData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ScaleData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseScaleData();
     while (reader.pos < end) {
@@ -3117,7 +3332,9 @@ export const ScaleData: MessageFns<ScaleData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      matrix: globalThis.Array.isArray(object?.matrix) ? object.matrix.map((e: any) => globalThis.Number(e)) : [],
+      matrix: globalThis.Array.isArray(object?.matrix)
+        ? object.matrix.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -3138,7 +3355,9 @@ export const ScaleData: MessageFns<ScaleData> = {
   create<I extends Exact<DeepPartial<ScaleData>, I>>(base?: I): ScaleData {
     return ScaleData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ScaleData>, I>>(object: I): ScaleData {
+  fromPartial<I extends Exact<DeepPartial<ScaleData>, I>>(
+    object: I,
+  ): ScaleData {
     const message = createBaseScaleData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -3152,7 +3371,10 @@ function createBaseReflectionData(): ReflectionData {
 }
 
 export const ReflectionData: MessageFns<ReflectionData> = {
-  encode(message: ReflectionData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ReflectionData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -3168,7 +3390,8 @@ export const ReflectionData: MessageFns<ReflectionData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ReflectionData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReflectionData();
     while (reader.pos < end) {
@@ -3221,7 +3444,9 @@ export const ReflectionData: MessageFns<ReflectionData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      matrix: globalThis.Array.isArray(object?.matrix) ? object.matrix.map((e: any) => globalThis.Number(e)) : [],
+      matrix: globalThis.Array.isArray(object?.matrix)
+        ? object.matrix.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -3239,10 +3464,14 @@ export const ReflectionData: MessageFns<ReflectionData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ReflectionData>, I>>(base?: I): ReflectionData {
+  create<I extends Exact<DeepPartial<ReflectionData>, I>>(
+    base?: I,
+  ): ReflectionData {
     return ReflectionData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ReflectionData>, I>>(object: I): ReflectionData {
+  fromPartial<I extends Exact<DeepPartial<ReflectionData>, I>>(
+    object: I,
+  ): ReflectionData {
     const message = createBaseReflectionData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -3256,7 +3485,10 @@ function createBaseShearData(): ShearData {
 }
 
 export const ShearData: MessageFns<ShearData> = {
-  encode(message: ShearData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ShearData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -3272,7 +3504,8 @@ export const ShearData: MessageFns<ShearData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ShearData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseShearData();
     while (reader.pos < end) {
@@ -3325,7 +3558,9 @@ export const ShearData: MessageFns<ShearData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      matrix: globalThis.Array.isArray(object?.matrix) ? object.matrix.map((e: any) => globalThis.Number(e)) : [],
+      matrix: globalThis.Array.isArray(object?.matrix)
+        ? object.matrix.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -3346,7 +3581,9 @@ export const ShearData: MessageFns<ShearData> = {
   create<I extends Exact<DeepPartial<ShearData>, I>>(base?: I): ShearData {
     return ShearData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ShearData>, I>>(object: I): ShearData {
+  fromPartial<I extends Exact<DeepPartial<ShearData>, I>>(
+    object: I,
+  ): ShearData {
     const message = createBaseShearData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -3360,7 +3597,10 @@ function createBaseProjectionData(): ProjectionData {
 }
 
 export const ProjectionData: MessageFns<ProjectionData> = {
-  encode(message: ProjectionData, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+  encode(
+    message: ProjectionData,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
     if (message.guid !== "") {
       writer.uint32(10).string(message.guid);
     }
@@ -3376,7 +3616,8 @@ export const ProjectionData: MessageFns<ProjectionData> = {
   },
 
   decode(input: BinaryReader | Uint8Array, length?: number): ProjectionData {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProjectionData();
     while (reader.pos < end) {
@@ -3429,7 +3670,9 @@ export const ProjectionData: MessageFns<ProjectionData> = {
     return {
       guid: isSet(object.guid) ? globalThis.String(object.guid) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      matrix: globalThis.Array.isArray(object?.matrix) ? object.matrix.map((e: any) => globalThis.Number(e)) : [],
+      matrix: globalThis.Array.isArray(object?.matrix)
+        ? object.matrix.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -3447,10 +3690,14 @@ export const ProjectionData: MessageFns<ProjectionData> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ProjectionData>, I>>(base?: I): ProjectionData {
+  create<I extends Exact<DeepPartial<ProjectionData>, I>>(
+    base?: I,
+  ): ProjectionData {
     return ProjectionData.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ProjectionData>, I>>(object: I): ProjectionData {
+  fromPartial<I extends Exact<DeepPartial<ProjectionData>, I>>(
+    object: I,
+  ): ProjectionData {
     const message = createBaseProjectionData();
     message.guid = object.guid ?? "";
     message.name = object.name ?? "";
@@ -3459,17 +3706,31 @@ export const ProjectionData: MessageFns<ProjectionData> = {
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
