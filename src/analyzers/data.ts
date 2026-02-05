@@ -49,7 +49,7 @@ export function findConstructor(data: Any): Constructor {
    * @throws {Error} - If the type is unsupported or not found in TYPE_MAP.
    */
   const typeUrl = data.typeUrl;
-  const typeName = typeUrl.split("/").slice(-1)[0];
+  const typeName = typeUrl.split(".").slice(-1)[0];
   const constructor = TYPE_MAP.get(typeName);
   if (!constructor) {
     throw new Error(`Unsupported geometry type: ${typeName}`);

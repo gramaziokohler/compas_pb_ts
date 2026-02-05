@@ -52,6 +52,7 @@ export class Vector {
   buildGeometry(origin?: Point): THREE.ArrowHelper {
     const direction = new THREE.Vector3(this.x, this.y, this.z);
     const length = direction.length();
+    direction.normalize();
     let vectorOrigin: THREE.Vector3;
     if (origin) {
       vectorOrigin = new THREE.Vector3(origin.x, origin.y, origin.z);
