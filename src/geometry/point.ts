@@ -48,8 +48,12 @@ export class Point {
     return this.data.z;
   }
 
-  buildGeoemtry(): THREE.SphereGeometry {
-    throw new Error("Method not implemented.");
+  buildGeometry(): THREE.Points {
+    const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array([this.x, this.y, this.z]);
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+    const material = new THREE.PointsMaterial({ size: 0.2, color: 0x0000ff });
+    return new THREE.Points(geometry, material);
   }
 }
 

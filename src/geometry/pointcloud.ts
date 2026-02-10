@@ -1,5 +1,6 @@
 import { PointcloudData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
+import * as THREE from "three";
 
 export class Pointcloud {
   public readonly data: PointcloudData;
@@ -42,6 +43,20 @@ export class Pointcloud {
       }
     }
     return this._points;
+  }
+
+  buildGeometry(): THREE.Points {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(this.points.length * 3);
+    for (let i = 0; i < this.points.length; i++) {
+      positions[i * 3] = this.points[i].x;
+      positions[i * 3 + 1] = this.points[i].y;
+      positions[i * 3 + 2] = this.points[i].z;
+    }
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.PointsMaterial({ size: 0.2, color: 0xff00ff });
+    const points = new THREE.Points(geometry, material);
+    return points;
   }
 }
 

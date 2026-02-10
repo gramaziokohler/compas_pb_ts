@@ -1,6 +1,7 @@
 import { FrameData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
 import { Vector } from "./vector";
+import { buildTransformationFromFrame } from "./transformation";
 import * as THREE from "three";
 
 export class Frame {
@@ -56,6 +57,19 @@ export class Frame {
       this._yaxis = new Vector({ data: this.data.yaxis! });
     }
     return this._yaxis;
+  }
+
+  buildGeometry(): THREE.AxesHelper {
+    const axesHelper = new THREE.AxesHelper(1);
+    axesHelper.setColors(
+      new THREE.Color(0xff0000),
+      new THREE.Color(0x00ff00),
+      new THREE.Color(0x0000ff),
+    );
+    const transformationMatrix = buildTransformationFromFrame(this.data);
+    axesHelper.applyMatrix4(transformationMatrix);
+
+    return axesHelper;
   }
 }
 

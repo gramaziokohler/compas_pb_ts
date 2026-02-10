@@ -50,7 +50,7 @@ export class Vector {
   }
 
   buildGeometry(origin?: Point): THREE.ArrowHelper {
-    const direction = new THREE.Vector3(this.x, this.y, this.z);
+    const direction: THREE.Vector3 = new THREE.Vector3(this.x, this.y, this.z);
     const length = direction.length();
     direction.normalize();
     let vectorOrigin: THREE.Vector3;
@@ -59,7 +59,14 @@ export class Vector {
     } else {
       vectorOrigin = new THREE.Vector3(0, 0, 0);
     }
-    const arrowHelper = new THREE.ArrowHelper(direction, vectorOrigin, length);
+
+    let arrowHelper = new THREE.ArrowHelper(
+      direction,
+      vectorOrigin,
+      length,
+      0xff0000,
+    );
+    arrowHelper.setDirection(direction);
     return arrowHelper;
   }
 }

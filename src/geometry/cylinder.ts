@@ -50,7 +50,7 @@ export class Cylinder {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 32): THREE.CylinderGeometry {
+  buildGeometry(segments: number = 64): THREE.CylinderGeometry {
     // geometry of the cylinder
     const cylinder_geometry = new THREE.CylinderGeometry(
       this.data.radius,

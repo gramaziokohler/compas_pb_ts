@@ -50,8 +50,16 @@ export class Torus {
     return this._frame;
   }
 
-  buildGeometry(segmentsTubular: number = 64, segmentsRadial: number = 32) {
-    throw Error("Method not implemented.");
+  buildGeometry(segmentsTubular: number = 64, segmentsRadial: number = 64) {
+    const torusGeometry = new THREE.TorusGeometry(
+      this.radiusAxis,
+      this.radiusPipe,
+      segmentsTubular,
+      segmentsRadial,
+    );
+    const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
+    torusGeometry.applyMatrix4(transformationMatrix);
+    return torusGeometry;
   }
 }
 

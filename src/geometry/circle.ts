@@ -46,8 +46,8 @@ export class Circle {
     return this._frame;
   }
 
-  buildGeometry(): THREE.CircleGeometry {
-    const circleGeometry = new THREE.CircleGeometry(this.data.radius, 32);
+  buildGeometry(segments: number = 64): THREE.CircleGeometry {
+    const circleGeometry = new THREE.CircleGeometry(this.data.radius, segments);
     const matrix = buildTransformationFromFrame(this.data.frame!);
     circleGeometry.applyMatrix4(matrix);
     return circleGeometry;

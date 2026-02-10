@@ -1,6 +1,7 @@
 import { PlaneData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
 import { Vector } from "./vector";
+import { buildTransformationFromFrame } from "./transformation";
 import * as THREE from "three";
 
 export class Plane {
@@ -51,8 +52,16 @@ export class Plane {
     return this._normal;
   }
 
-  buildGeometry(size: number = 1): THREE.PlaneGeometry {
-    throw new Error("Method not implemented.");
+  buildGeometry(size: number = 2): THREE.PlaneHelper {
+    const plane = new THREE.Plane(
+      new THREE.Vector3(this.normal.x, this.normal.y, this.normal.z),
+      0,
+    );
+    plane.translate(
+      new THREE.Vector3(this.point.x, this.point.y, this.point.z),
+    );
+    const planeGeometry = new THREE.PlaneHelper(plane, size, 0xff00ff);
+    return planeGeometry;
   }
 }
 

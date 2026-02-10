@@ -1,5 +1,6 @@
 import { PolylineData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
+import * as THREE from "three";
 
 export class Polyline {
   public readonly data: PolylineData;
@@ -44,8 +45,18 @@ export class Polyline {
     return this._points;
   }
 
-  buildGeometry() {
-    throw Error("Method not implemented.");
+  buildGeometry(): THREE.Line {
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(this.points.length * 3);
+    for (let i = 0; i < this.points.length; i++) {
+      positions[i * 3] = this.points[i].x;
+      positions[i * 3 + 1] = this.points[i].y;
+      positions[i * 3 + 2] = this.points[i].z;
+    }
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const material = new THREE.LineBasicMaterial({ color: 0x000000 });
+    const line = new THREE.Line(geometry, material);
+    return line;
   }
 }
 

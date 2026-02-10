@@ -50,8 +50,15 @@ export class Cone {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 32) {
-    throw Error("Method not implemented.");
+  buildGeometry(segments: number = 64): THREE.ConeGeometry {
+    const coneGeometry = new THREE.ConeGeometry(
+      this.radius,
+      this.height,
+      segments,
+    );
+    const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
+    coneGeometry.applyMatrix4(transformationMatrix);
+    return coneGeometry;
   }
 }
 

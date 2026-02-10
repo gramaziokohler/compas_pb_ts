@@ -1,4 +1,6 @@
 import * as GEOMETRY from "../geometry/index.js";
+import * as DATASTRUCTURES from "../datastructures/index.js";
+import * as MESSAGES from "../messages/index.js";
 
 export type Constructor<T = any> = new (...args: any[]) => T;
 
@@ -31,4 +33,7 @@ export const TYPE_MAP = new Map<string, Constructor>([
   ["TransformationData", GEOMETRY.Transformation],
   ["TranslationData", GEOMETRY.Translation],
   ["VectorData", GEOMETRY.Vector],
+  ["MeshData", DATASTRUCTURES.Mesh],
+  ["PolyhedronData", DATASTRUCTURES.Polyhedron],
+  ["DictData", MESSAGES.Dictionary],
 ]);

@@ -46,8 +46,15 @@ export class Sphere {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 32): THREE.SphereGeometry {
-    throw Error("Method not implemented.");
+  buildGeometry(segments: number = 64): THREE.SphereGeometry {
+    const sphereGeometry = new THREE.SphereGeometry(
+      this.radius,
+      segments,
+      segments,
+    );
+    const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
+    sphereGeometry.applyMatrix4(transformationMatrix);
+    return sphereGeometry;
   }
 }
 

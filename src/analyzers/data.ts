@@ -16,8 +16,11 @@ export function unpackMessageToGeometry(message: Uint8Array): any {
    */
   const messageData: Any = unpackMessage(message);
   const geometryConstructor = findConstructor(messageData);
-  const geometry = new geometryConstructor({ bytes: messageData.value });
-  return geometry;
+  if (geometryConstructor) {
+    const geometry = new geometryConstructor({ bytes: messageData.value });
+    return geometry;
+  }
+  return null;
 }
 
 export function unpackMessage(message: Uint8Array): Any {
@@ -35,7 +38,7 @@ export function unpackMessage(message: Uint8Array): Any {
   return message_data.data!.message!;
 }
 
-export function findConstructor(data: Any): Constructor {
+export function findConstructor(data: Any): Constructor | null {
   /**
    * Finds the constructor for a given protobuf Any object.
    *
@@ -51,8 +54,5 @@ export function findConstructor(data: Any): Constructor {
   const typeUrl = data.typeUrl;
   const typeName = typeUrl.split(".").slice(-1)[0];
   const constructor = TYPE_MAP.get(typeName);
-  if (!constructor) {
-    throw new Error(`Unsupported geometry type: ${typeName}`);
-  }
-  return constructor;
+  return constructor || null;
 }

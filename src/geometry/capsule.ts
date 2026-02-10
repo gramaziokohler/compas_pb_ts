@@ -50,8 +50,16 @@ export class Capsule {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 32): THREE.CapsuleGeometry {
-    throw Error("Method not implemented.");
+  buildGeometry(segments: number = 64): THREE.CapsuleGeometry {
+    const capsuleGeometry = new THREE.CapsuleGeometry(
+      this.data.radius,
+      this.data.height,
+      segments,
+      segments,
+    );
+    const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
+    capsuleGeometry.applyMatrix4(transformationMatrix);
+    return capsuleGeometry;
   }
 }
 
