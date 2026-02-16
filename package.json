@@ -31,7 +31,8 @@
     "lint": "biome check --error-on-warnings",
     "format": "biome format --write",
     "test": "vitest run --coverage",
-    "size": "size-limit"
+    "size": "size-limit",
+    "proto": "node scripts/proto-gen.mjs"
   },
   "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
   "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
@@ -53,11 +54,15 @@
     "@biomejs/biome": "2.2.3",
     "@size-limit/preset-small-lib": "^8.2.4",
     "@types/node": "^22.18.1",
+    "@types/three": "^0.182.0",
     "@vitest/coverage-istanbul": "3.2.4",
     "size-limit": "^8.2.4",
+    "ts-proto": "^2.7.2",
     "tsdown": "^0.15.0",
     "typescript": "^5.9.2",
-    "vitest": "^3.2.4",
-    "ts-proto": "^2.7.2"
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "three": "^0.182.0"
   }
 }
