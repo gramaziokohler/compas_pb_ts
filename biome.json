@@ -9,6 +9,7 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
+      "!.claude",
       "!.release-please-manifest.json",
       "!coverage",
       "!dist",
