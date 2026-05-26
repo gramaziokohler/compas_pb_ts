@@ -36,13 +36,5 @@ jobs:
       # Build
       - run: pnpm build
 
-      # Tests + coverage
-      - run: pnpm coverage
-
-      # Upload coverage for badge/commenting
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          verbose: true
+      # Tests
+      - run: pnpm test
