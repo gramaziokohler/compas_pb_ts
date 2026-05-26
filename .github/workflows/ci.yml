@@ -37,7 +37,7 @@ jobs:
       - run: pnpm build
 
       # Tests + coverage
-      - run: pnpm test
+      - run: pnpm coverage
 
       # Upload coverage for badge/commenting
       - name: Upload coverage to Codecov
