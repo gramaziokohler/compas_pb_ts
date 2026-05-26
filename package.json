@@ -1,5 +1,5 @@
 {
-  "name": "@gramaziokohler/compas_pb_ts",
+  "name": "@gramaziokohler/compas-pb-ts",
   "version": "1.0.2",
   "description": "COMPAS Protobuf wrapper for TypeScript",
   "keywords": [

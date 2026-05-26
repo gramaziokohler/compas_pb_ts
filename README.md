@@ -6,13 +6,13 @@ datastructures, and messages.
 ## Install
 
 ```sh
-npm install @gramaziokohler/compas_pb_ts
+npm install @gramaziokohler/compas-pb-ts
 ```
 
 ## Usage
 
 ```ts
-import { Point, pointDataToBytes, bytesToPointData } from "@gramaziokohler/compas_pb_ts";
+import { Point, pointDataToBytes, bytesToPointData } from "@gramaziokohler/compas-pb-ts";
 
 const point = new Point({
   data: {
@@ -31,7 +31,7 @@ const decoded = bytesToPointData(bytes);
 Generated protobuf types are available from namespaced root exports:
 
 ```ts
-import type { CompasGeometry } from "@gramaziokohler/compas_pb_ts";
+import type { CompasGeometry } from "@gramaziokohler/compas-pb-ts";
 
 const point: CompasGeometry.PointData = {
   guid: "point-guid",

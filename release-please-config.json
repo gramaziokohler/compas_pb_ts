@@ -3,7 +3,7 @@
   "release-type": "node",
   "packages": {
     ".": {
-      "package-name": "@gramaziokohler/compas_pb_ts",
+      "package-name": "@gramaziokohler/compas-pb-ts",
       "extra-files": ["jsr.json"]
     }
   }
