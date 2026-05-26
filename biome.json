@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!.release-please-manifest.json", "!jsr.json"]
+    "includes": [
+      "**",
+      "!.release-please-manifest.json",
+      "!coverage",
+      "!dist",
+      "!jsr.json",
+      "!src/_archive",
+      "!src/generated"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -18,7 +26,12 @@
     "rules": {
       "recommended": true,
       "style": {
+        "noNonNullAssertion": "off",
         "useTemplate": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noShadowRestrictedNames": "off"
       }
     }
   },
@@ -31,7 +44,7 @@
     "enabled": true,
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": "off"
       }
     }
   }
