@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.2...compas-pb-ts-v1.1.3) (2026-05-26)
+
+
+### Bug Fixes
+
+* satisfy JSR slow-types checker ([e9f7956](https://github.com/gramaziokohler/compas_pb_ts/commit/e9f79569197d47775e6d9e7bd03088e6ca705b33))
+
 ## [1.1.2](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.1...compas-pb-ts-v1.1.2) (2026-05-26)
 
 
