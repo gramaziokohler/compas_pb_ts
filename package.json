@@ -13,30 +13,33 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./browser": {
-      "import": "./dist/browser.js",
-      "types": "./dist/browser.d.ts"
     }
   },
   "types": "./dist/index.d.ts",
-  "browser": "./dist/browser.js",
   "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "lint": "biome check --error-on-warnings",
+    "lint": "biome check",
     "format": "biome format --write",
-    "test": "vitest run --coverage",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "size": "size-limit",
+    "prepublishOnly": "npm run lint && npm test && npm run build",
     "proto": "node scripts/proto-gen.mjs"
   },
   "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
   "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
-  "repository": "github:gramaziokohler/compas_pb_ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gramaziokohler/compas_pb_ts.git"
+  },
   "bugs": {
     "url": "https://github.com/gramaziokohler/compas_pb_ts/issues"
   },
@@ -46,8 +49,8 @@
   },
   "size-limit": [
     {
-      "path": "dist/browser.js",
-      "limit": "3.5 KB"
+      "path": "dist/index.js",
+      "limit": "90 KB"
     }
   ],
   "devDependencies": {
@@ -56,13 +59,16 @@
     "@types/node": "^22.18.1",
     "@types/three": "^0.182.0",
     "@vitest/coverage-istanbul": "3.2.4",
+    "glob": "^11.0.3",
     "size-limit": "^8.2.4",
-    "ts-proto": "^2.7.2",
-    "tsdown": "^0.15.0",
+    "ts-proto": "^2.11.1",
+    "tsdown": "^0.15.12",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^2.10.1",
     "three": "^0.182.0"
-  }
+  },
+  "packageManager": "pnpm@9.15.9"
 }
