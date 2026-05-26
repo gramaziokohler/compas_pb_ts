@@ -1,11 +1,20 @@
 import { describe, it, expect } from "vitest";
-import { pointDataToBytes, bytesToPointData } from "../src/converters";
-import { vectorDataToBytes, bytesToVectorData } from "../src/converters";
-import { frameDataToBytes, bytesToFrameData } from "../src/converters";
-import { planeDataToBytes, bytesToPlaneData } from "../src/converters";
-import { lineDataToBytes, bytesToLineData } from "../src/converters";
-import { circleDataToBytes, bytesToCircleData } from "../src/converters";
-import { boxDataToBytes, bytesToBoxData } from "../src/converters";
+import {
+  pointDataToBytes,
+  bytesToPointData,
+  vectorDataToBytes,
+  bytesToVectorData,
+  frameDataToBytes,
+  bytesToFrameData,
+  planeDataToBytes,
+  bytesToPlaneData,
+  lineDataToBytes,
+  bytesToLineData,
+  circleDataToBytes,
+  bytesToCircleData,
+  boxDataToBytes,
+  bytesToBoxData,
+} from "../src/geometry";
 import {
   PointData,
   VectorData,

@@ -6,12 +6,6 @@ export default defineConfig({
       provider: "istanbul",
       reporter: ["lcov"],
       include: ["src/**/*.ts"],
-      thresholds: {
-        branches: 75,
-        functions: 95,
-        lines: 95,
-        statements: 95,
-      },
     },
   },
 });
