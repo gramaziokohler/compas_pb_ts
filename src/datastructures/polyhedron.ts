@@ -64,7 +64,7 @@ export class Polyhedron {
     return this._faces;
   }
 
-  buildGeometry() {
+  buildGeometry(): THREE.Mesh {
     const geometry = new THREE.BufferGeometry();
 
     const vertices = new Float32Array(this.vertices.length * 3);

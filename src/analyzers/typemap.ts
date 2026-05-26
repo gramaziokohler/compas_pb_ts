@@ -1,10 +1,10 @@
-import * as GEOMETRY from "../geometry/index.js";
-import * as DATASTRUCTURES from "../datastructures/index.js";
-import * as MESSAGES from "../messages/index.js";
+import * as DATASTRUCTURES from "../datastructures";
+import * as GEOMETRY from "../geometry";
+import * as MESSAGES from "../messages";
 
 export type Constructor<T = any> = new (...args: any[]) => T;
 
-export const TYPE_MAP = new Map<string, Constructor>([
+export const TYPE_MAP: Map<string, Constructor> = new Map<string, Constructor>([
   ["ArcData", GEOMETRY.Arc],
   ["BezierData", GEOMETRY.Bezier],
   ["BoxData", GEOMETRY.Box],

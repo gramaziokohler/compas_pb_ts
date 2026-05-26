@@ -61,7 +61,7 @@ export class Mesh {
     return faces;
   }
 
-  buildGeometry() {
+  buildGeometry(): THREE.Mesh {
     const geometry = new THREE.BufferGeometry();
 
     // Convert vertices to a flat array of positions
