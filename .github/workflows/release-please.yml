@@ -54,3 +54,6 @@ jobs:
 
       - name: publish to npm
         run: npm publish --access public --provenance
+
+      - name: publish to JSR
+        run: pnpm dlx jsr publish
