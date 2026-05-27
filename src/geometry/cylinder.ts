@@ -50,7 +50,7 @@ export class Cylinder {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 64): THREE.CylinderGeometry {
+  buildGeometry(segments: number = 64): THREE.Mesh {
     // geometry of the cylinder
     const cylinder_geometry = new THREE.CylinderGeometry(
       this.data.radius,
@@ -59,11 +59,13 @@ export class Cylinder {
       segments,
     );
 
+    const cylinderMesh = new THREE.Mesh(cylinder_geometry);
+
     // transform geometry to the correct position
     const transform = buildTransformationFromFrame(this.frame);
-    cylinder_geometry.applyMatrix4(transform);
+    cylinderMesh.applyMatrix4(transform);
 
-    return cylinder_geometry;
+    return cylinderMesh;
   }
 }
 

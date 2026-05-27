@@ -50,19 +50,20 @@ export class Torus {
     return this._frame;
   }
 
-  buildGeometry(
-    segmentsTubular: number = 64,
-    segmentsRadial: number = 64,
-  ): THREE.TorusGeometry {
+  buildGeometry(segmentsTubular: number = 64, segmentsRadial: number = 64) {
     const torusGeometry = new THREE.TorusGeometry(
       this.radiusAxis,
       this.radiusPipe,
       segmentsTubular,
       segmentsRadial,
     );
+
+    const torusMesh = new THREE.Mesh(torusGeometry);
+
     const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
-    torusGeometry.applyMatrix4(transformationMatrix);
-    return torusGeometry;
+    torusMesh.applyMatrix4(transformationMatrix);
+
+    return torusMesh;
   }
 }
 
