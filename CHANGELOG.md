@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.4...compas-pb-ts-v1.1.5) (2026-05-28)
+
+
+### Bug Fixes
+
+* **geometry:** add explicit return types for JSR slow-types checker ([cc7738d](https://github.com/gramaziokohler/compas_pb_ts/commit/cc7738d946fa2d4d731cb46961cb025fc8563471))
+
 ## [1.1.4](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.3...compas-pb-ts-v1.1.4) (2026-05-28)
 
 
