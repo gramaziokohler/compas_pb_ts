@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.3...compas-pb-ts-v1.1.4) (2026-05-28)
+
+
+### Bug Fixes
+
+* **geometry:** fix mesh return values for all geometry types ([3c0a743](https://github.com/gramaziokohler/compas_pb_ts/commit/3c0a743f437e3ae092e0c4f470bce67c1a683a31))
+
 ## [1.1.3](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.2...compas-pb-ts-v1.1.3) (2026-05-26)
 
 
