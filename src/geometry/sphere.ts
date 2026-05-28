@@ -46,7 +46,7 @@ export class Sphere {
     return this._frame;
   }
 
-  buildGeometry(segments: number = 64): THREE.SphereGeometry {
+  buildGeometry(segments: number = 64): THREE.Mesh {
     const sphereGeometry = new THREE.SphereGeometry(
       this.radius,
       segments,
