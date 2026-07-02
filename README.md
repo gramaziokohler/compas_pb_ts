@@ -42,6 +42,10 @@ const point: CompasGeometry.PointData = {
 };
 ```
 
+## Debugging
+
+Class names are preserved in the build for better debugging. Inspect objects in the console to see descriptive names like Point, Box, Sphere instead of minified names.
+
 ## Development
 
 ```sh
