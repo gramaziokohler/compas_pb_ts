@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.2.0...compas-pb-ts-v1.2.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* correct lockfile YAML indentation ([b93f554](https://github.com/gramaziokohler/compas_pb_ts/commit/b93f55462e50e3a50f48c3b50540613baa94cc77))
+
 ## [1.2.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.5...compas-pb-ts-v1.2.0) (2026-07-02)
 
 ### ⚠️ BREAKING CHANGES
