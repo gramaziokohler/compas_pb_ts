@@ -1,7 +1,4 @@
 import { VectorData } from "../generated/compas_pb/data/geometry";
-import { Point } from "./point";
-import * as THREE from "three";
-
 export class Vector {
     public readonly data: VectorData;
 

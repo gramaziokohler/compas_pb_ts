@@ -1,8 +1,6 @@
 import { PlaneData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
 import { Vector } from "./vector";
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
 
 export class Plane {
     public readonly data: PlaneData;

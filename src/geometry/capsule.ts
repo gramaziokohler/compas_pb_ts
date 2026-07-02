@@ -1,8 +1,5 @@
 import { CapsuleData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
-
 export class Capsule {
     public readonly data: CapsuleData;
     private _frame?: Frame;

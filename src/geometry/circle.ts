@@ -1,7 +1,5 @@
 import { CircleData } from "../generated/compas_pb/data/geometry";
-import { buildTransformationFromFrame } from "./transformation";
 import { Frame } from "./frame";
-import * as THREE from "three";
 
 export class Circle {
     public readonly data: CircleData;

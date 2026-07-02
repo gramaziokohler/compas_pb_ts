@@ -1,7 +1,5 @@
 import { ShearData } from "../generated/compas_pb/data/geometry";
 
-import * as THREE from "three";
-
 export class Shear {
     public readonly data: ShearData;
 

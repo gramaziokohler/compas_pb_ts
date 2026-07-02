@@ -1,5 +1,4 @@
 import { ProjectionData } from "../generated/compas_pb/data/geometry";
-import * as THREE from "three";
 
 export class Projection {
     public readonly data: ProjectionData;

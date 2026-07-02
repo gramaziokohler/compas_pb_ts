@@ -1,6 +1,4 @@
-import type { FrameData } from "../generated/compas_pb/data/geometry";
 import { TransformationData } from "../generated/compas_pb/data/geometry";
-import * as THREE from "three";
 
 export class Transformation {
     public readonly data: TransformationData;

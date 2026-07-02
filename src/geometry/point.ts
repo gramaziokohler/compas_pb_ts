@@ -1,5 +1,4 @@
 import { PointData } from "../generated/compas_pb/data/geometry";
-import * as THREE from "three";
 
 export class Point {
     public readonly data: PointData;

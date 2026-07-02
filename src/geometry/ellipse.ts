@@ -1,7 +1,5 @@
 import { EllipseData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
 
 export class Ellipse {
     public readonly data: EllipseData;

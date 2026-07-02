@@ -1,7 +1,6 @@
 import { PolyhedronData } from "../generated/compas_pb/data/datastructures";
 import { Point } from "../geometry/point";
 import { PolyhedronFace } from "./face";
-import * as THREE from "three";
 
 export class Polyhedron {
     public readonly data: PolyhedronData;

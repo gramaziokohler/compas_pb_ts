@@ -1,8 +1,5 @@
 import { ConeData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
-
 export class Cone {
     public readonly data: ConeData;
     private _frame?: Frame;

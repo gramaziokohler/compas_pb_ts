@@ -1,6 +1,5 @@
 import { PolylineData } from "../generated/compas_pb/data/geometry";
 import { Point } from "./point";
-import * as THREE from "three";
 
 export class Polyline {
     public readonly data: PolylineData;

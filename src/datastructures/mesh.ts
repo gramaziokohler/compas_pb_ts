@@ -1,7 +1,6 @@
 import { MeshData } from "../generated/compas_pb/data/datastructures";
 import { Point } from "../geometry/point";
 import { MeshFaceList } from "./facelist";
-import * as THREE from "three";
 
 export class Mesh {
     public readonly data: MeshData;

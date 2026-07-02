@@ -1,7 +1,5 @@
 import { HyperbolaData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
 
 export class Hyperbola {
     public readonly data: HyperbolaData;

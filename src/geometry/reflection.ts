@@ -1,8 +1,5 @@
 import { ReflectionData } from "../generated/compas_pb/data/geometry";
 
-import { buildTransformationFromFrame } from "./transformation";
-import * as THREE from "three";
-
 export class Reflection {
     public readonly data: ReflectionData;
 
