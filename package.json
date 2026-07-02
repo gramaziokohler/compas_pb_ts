@@ -1,72 +1,72 @@
 {
-    "name": "@gramaziokohler/compas-pb-ts",
-    "version": "1.2.1",
-    "description": "COMPAS Protobuf wrapper for TypeScript",
-    "keywords": [
-        "COMPAS",
-        "Protobuf",
-        "typescript"
-    ],
-    "homepage": "https://github.com/gramaziokohler/compas_pb_ts",
-    "type": "module",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "types": "./dist/index.d.ts",
-    "sideEffects": false,
-    "publishConfig": {
-        "access": "public"
-    },
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "build": "tsdown",
-        "dev": "tsdown --watch",
-        "lint": "biome check",
-        "format": "biome format --write",
-        "test": "vitest run",
-        "coverage": "vitest run --coverage",
-        "size": "size-limit",
-        "prepublishOnly": "npm run lint && npm test && npm run build",
-        "proto": "node scripts/proto-gen.mjs"
-    },
-    "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
-    "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/gramaziokohler/compas_pb_ts.git"
-    },
-    "bugs": {
-        "url": "https://github.com/gramaziokohler/compas_pb_ts/issues"
-    },
-    "license": "MIT",
-    "engines": {
-        "node": ">=20"
-    },
-    "size-limit": [
-        {
-            "path": "dist/index.js",
-            "limit": "140 KB"
-        }
-    ],
-    "devDependencies": {
-        "@biomejs/biome": "2.2.3",
-        "@size-limit/preset-small-lib": "^8.2.4",
-        "@types/node": "^22.18.1",
-        "@vitest/coverage-istanbul": "3.2.4",
-        "glob": "^11.0.3",
-        "size-limit": "^8.2.4",
-        "ts-proto": "^2.11.1",
-        "tsdown": "^0.15.12",
-        "typescript": "^5.9.2",
-        "vitest": "^3.2.4"
-    },
-    "dependencies": {
-        "@bufbuild/protobuf": "^2.10.1"
-    },
-    "packageManager": "pnpm@9.15.9"
+  "name": "@gramaziokohler/compas-pb-ts",
+  "version": "1.2.1",
+  "description": "COMPAS Protobuf wrapper for TypeScript",
+  "keywords": [
+    "COMPAS",
+    "Protobuf",
+    "typescript"
+  ],
+  "homepage": "https://github.com/gramaziokohler/compas_pb_ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "size": "size-limit",
+    "prepublishOnly": "npm run lint && npm test && npm run build",
+    "proto": "node scripts/proto-gen.mjs"
+  },
+  "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
+  "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gramaziokohler/compas_pb_ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gramaziokohler/compas_pb_ts/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.js",
+      "limit": "140 KB"
+    }
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "2.2.3",
+    "@size-limit/preset-small-lib": "^8.2.4",
+    "@types/node": "^22.18.1",
+    "@vitest/coverage-istanbul": "3.2.4",
+    "glob": "^11.0.3",
+    "size-limit": "^8.2.4",
+    "ts-proto": "^2.11.1",
+    "tsdown": "^0.15.12",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.10.1"
+  },
+  "packageManager": "pnpm@9.15.9"
 }
