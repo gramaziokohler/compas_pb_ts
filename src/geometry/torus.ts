@@ -4,76 +4,57 @@ import { buildTransformationFromFrame } from "./transformation";
 import * as THREE from "three";
 
 export class Torus {
-  public readonly data: TorusData;
-  private _frame?: Frame;
+    public readonly data: TorusData;
+    private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: TorusData }) {
-    let torusData: TorusData;
-    if ("bytes" in input) {
-      torusData = bytesToTorusData(input.bytes);
-    } else {
-      torusData = input.data;
+    constructor(input: { bytes: Uint8Array } | { data: TorusData }) {
+        let torusData: TorusData;
+        if ("bytes" in input) {
+            torusData = bytesToTorusData(input.bytes);
+        } else {
+            torusData = input.data;
+        }
+
+        if (!torusData.radiusAxis || !torusData.radiusPipe || !torusData.frame) {
+            throw new Error(
+                "Invalid TorusData: Missing required properties (major, minor, or frame).",
+            );
+        }
+        this.data = torusData;
     }
 
-    if (!torusData.radiusAxis || !torusData.radiusPipe || !torusData.frame) {
-      throw new Error(
-        "Invalid TorusData: Missing required properties (major, minor, or frame).",
-      );
+    get bytes(): Uint8Array {
+        return torusDataToBytes(this.data);
     }
-    this.data = torusData;
-  }
 
-  get bytes(): Uint8Array {
-    return torusDataToBytes(this.data);
-  }
-
-  get guid(): string {
-    return this.data.guid;
-  }
-
-  get name(): string {
-    return this.data.name;
-  }
-
-  get radiusAxis(): number {
-    return this.data.radiusAxis;
-  }
-
-  get radiusPipe(): number {
-    return this.data.radiusPipe;
-  }
-
-  get frame(): Frame {
-    if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+    get guid(): string {
+        return this.data.guid;
     }
-    return this._frame;
-  }
 
-  buildGeometry(
-    segmentsTubular: number = 64,
-    segmentsRadial: number = 64,
-  ): THREE.Mesh {
-    const torusGeometry = new THREE.TorusGeometry(
-      this.radiusAxis,
-      this.radiusPipe,
-      segmentsTubular,
-      segmentsRadial,
-    );
+    get name(): string {
+        return this.data.name;
+    }
 
-    const torusMesh = new THREE.Mesh(torusGeometry);
+    get radiusAxis(): number {
+        return this.data.radiusAxis;
+    }
 
-    const transformationMatrix = buildTransformationFromFrame(this.data.frame!);
-    torusMesh.applyMatrix4(transformationMatrix);
+    get radiusPipe(): number {
+        return this.data.radiusPipe;
+    }
 
-    return torusMesh;
-  }
+    get frame(): Frame {
+        if (!this._frame) {
+            this._frame = new Frame({ data: this.data.frame! });
+        }
+        return this._frame;
+    }
 }
 
 export function bytesToTorusData(bytes: Uint8Array): TorusData {
-  return TorusData.decode(bytes);
+    return TorusData.decode(bytes);
 }
 
 export function torusDataToBytes(data: TorusData): Uint8Array {
-  return TorusData.encode(data).finish();
+    return TorusData.encode(data).finish();
 }
