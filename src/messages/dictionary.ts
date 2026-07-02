@@ -21,7 +21,7 @@ export class Dictionary {
   get asDict(): { [key: string]: any } {
     const result: { [key: string]: any } = {};
     for (const key in this.data.items) {
-      if (Object.prototype.hasOwnProperty.call(this.data.items, key)) {
+      if (Object.hasOwn(this.data.items, key)) {
         result[key] = this.data.items[key];
       }
     }

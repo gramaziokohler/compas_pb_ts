@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   Box,
-  CompasGeometry,
+  type CompasGeometry,
   Point,
   bytesToPointData,
   pointDataToBytes,

@@ -2,51 +2,53 @@ import { SphereData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
 
 export class Sphere {
-    public readonly data: SphereData;
-    private _frame?: Frame;
+  public readonly data: SphereData;
+  private _frame?: Frame;
 
-    constructor(input: { bytes: Uint8Array } | { data: SphereData }) {
-        let sphereData: SphereData;
-        if ("bytes" in input) {
-            sphereData = bytesToSphereData(input.bytes);
-        } else {
-            sphereData = input.data;
-        }
-
-        if (!sphereData.radius || !sphereData.frame) {
-            throw new Error("Invalid SphereData: Missing required properties (radius or frame).");
-        }
-        this.data = sphereData;
+  constructor(input: { bytes: Uint8Array } | { data: SphereData }) {
+    let sphereData: SphereData;
+    if ("bytes" in input) {
+      sphereData = bytesToSphereData(input.bytes);
+    } else {
+      sphereData = input.data;
     }
 
-    get bytes(): Uint8Array {
-        return sphereDataToBytes(this.data);
+    if (!sphereData.radius || !sphereData.frame) {
+      throw new Error(
+        "Invalid SphereData: Missing required properties (radius or frame).",
+      );
     }
+    this.data = sphereData;
+  }
 
-    get guid(): string {
-        return this.data.guid;
-    }
+  get bytes(): Uint8Array {
+    return sphereDataToBytes(this.data);
+  }
 
-    get name(): string {
-        return this.data.name;
-    }
+  get guid(): string {
+    return this.data.guid;
+  }
 
-    get radius(): number {
-        return this.data.radius;
-    }
+  get name(): string {
+    return this.data.name;
+  }
 
-    get frame(): Frame {
-        if (!this._frame) {
-            this._frame = new Frame({ data: this.data.frame! });
-        }
-        return this._frame;
+  get radius(): number {
+    return this.data.radius;
+  }
+
+  get frame(): Frame {
+    if (!this._frame) {
+      this._frame = new Frame({ data: this.data.frame! });
     }
+    return this._frame;
+  }
 }
 
 export function bytesToSphereData(bytes: Uint8Array): SphereData {
-    return SphereData.decode(bytes);
+  return SphereData.decode(bytes);
 }
 
 export function sphereDataToBytes(data: SphereData): Uint8Array {
-    return SphereData.encode(data).finish();
+  return SphereData.encode(data).finish();
 }

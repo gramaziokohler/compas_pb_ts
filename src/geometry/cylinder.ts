@@ -2,57 +2,57 @@ import { CylinderData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
 
 export class Cylinder {
-    public readonly data: CylinderData;
-    private _frame?: Frame;
+  public readonly data: CylinderData;
+  private _frame?: Frame;
 
-    constructor(input: { bytes: Uint8Array } | { data: CylinderData }) {
-        let cylinderData: CylinderData;
-        if ("bytes" in input) {
-            cylinderData = bytesToCylinderData(input.bytes);
-        } else {
-            cylinderData = input.data;
-        }
-
-        if (!cylinderData.radius || !cylinderData.height || !cylinderData.frame) {
-            throw new Error(
-                "Invalid CylinderData: Missing required properties (radius, height, or frame).",
-            );
-        }
-        this.data = cylinderData;
+  constructor(input: { bytes: Uint8Array } | { data: CylinderData }) {
+    let cylinderData: CylinderData;
+    if ("bytes" in input) {
+      cylinderData = bytesToCylinderData(input.bytes);
+    } else {
+      cylinderData = input.data;
     }
 
-    get bytes(): Uint8Array {
-        return cylinderDataToBytes(this.data);
+    if (!cylinderData.radius || !cylinderData.height || !cylinderData.frame) {
+      throw new Error(
+        "Invalid CylinderData: Missing required properties (radius, height, or frame).",
+      );
     }
+    this.data = cylinderData;
+  }
 
-    get guid(): string {
-        return this.data.guid;
-    }
+  get bytes(): Uint8Array {
+    return cylinderDataToBytes(this.data);
+  }
 
-    get name(): string {
-        return this.data.name;
-    }
+  get guid(): string {
+    return this.data.guid;
+  }
 
-    get radius(): number {
-        return this.data.radius;
-    }
+  get name(): string {
+    return this.data.name;
+  }
 
-    get height(): number {
-        return this.data.height;
-    }
+  get radius(): number {
+    return this.data.radius;
+  }
 
-    get frame(): Frame {
-        if (!this._frame) {
-            this._frame = new Frame({ data: this.data.frame! });
-        }
-        return this._frame;
+  get height(): number {
+    return this.data.height;
+  }
+
+  get frame(): Frame {
+    if (!this._frame) {
+      this._frame = new Frame({ data: this.data.frame! });
     }
+    return this._frame;
+  }
 }
 
 export function bytesToCylinderData(bytes: Uint8Array): CylinderData {
-    return CylinderData.decode(bytes);
+  return CylinderData.decode(bytes);
 }
 
 export function cylinderDataToBytes(data: CylinderData): Uint8Array {
-    return CylinderData.encode(data).finish();
+  return CylinderData.encode(data).finish();
 }

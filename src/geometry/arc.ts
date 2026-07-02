@@ -2,57 +2,57 @@ import { ArcData } from "../generated/compas_pb/data/geometry";
 import { Circle } from "./circle";
 
 export class Arc {
-    public readonly data: ArcData;
-    private _circle?: Circle;
+  public readonly data: ArcData;
+  private _circle?: Circle;
 
-    constructor(input: { bytes: Uint8Array } | { data: ArcData }) {
-        let arcData: ArcData;
-        if ("bytes" in input) {
-            arcData = bytesToArcData(input.bytes);
-        } else {
-            arcData = input.data;
-        }
-
-        if (!arcData.startAngle || !arcData.endAngle || !arcData.circle) {
-            throw new Error(
-                "Invalid ArcData: Missing required properties (startAngle, endAngle, or circle).",
-            );
-        }
-        this.data = arcData;
+  constructor(input: { bytes: Uint8Array } | { data: ArcData }) {
+    let arcData: ArcData;
+    if ("bytes" in input) {
+      arcData = bytesToArcData(input.bytes);
+    } else {
+      arcData = input.data;
     }
 
-    get bytes(): Uint8Array {
-        return arcDataToBytes(this.data);
+    if (!arcData.startAngle || !arcData.endAngle || !arcData.circle) {
+      throw new Error(
+        "Invalid ArcData: Missing required properties (startAngle, endAngle, or circle).",
+      );
     }
+    this.data = arcData;
+  }
 
-    get guid(): string {
-        return this.data.guid;
-    }
+  get bytes(): Uint8Array {
+    return arcDataToBytes(this.data);
+  }
 
-    get name(): string {
-        return this.data.name;
-    }
+  get guid(): string {
+    return this.data.guid;
+  }
 
-    get startAngle(): number {
-        return this.data.startAngle;
-    }
+  get name(): string {
+    return this.data.name;
+  }
 
-    get endAngle(): number {
-        return this.data.endAngle;
-    }
+  get startAngle(): number {
+    return this.data.startAngle;
+  }
 
-    get circle(): Circle {
-        if (!this._circle) {
-            this._circle = new Circle({ data: this.data.circle! });
-        }
-        return this._circle;
+  get endAngle(): number {
+    return this.data.endAngle;
+  }
+
+  get circle(): Circle {
+    if (!this._circle) {
+      this._circle = new Circle({ data: this.data.circle! });
     }
+    return this._circle;
+  }
 }
 
 export function bytesToArcData(bytes: Uint8Array): ArcData {
-    return ArcData.decode(bytes);
+  return ArcData.decode(bytes);
 }
 
 export function arcDataToBytes(data: ArcData): Uint8Array {
-    return ArcData.encode(data).finish();
+  return ArcData.encode(data).finish();
 }

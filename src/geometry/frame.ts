@@ -3,65 +3,65 @@ import { Point } from "./point";
 import { Vector } from "./vector";
 
 export class Frame {
-    public readonly data: FrameData;
-    private _point?: Point;
-    private _xaxis?: Vector;
-    private _yaxis?: Vector;
+  public readonly data: FrameData;
+  private _point?: Point;
+  private _xaxis?: Vector;
+  private _yaxis?: Vector;
 
-    constructor(input: { bytes: Uint8Array } | { data: FrameData }) {
-        let frameData: FrameData;
-        if ("bytes" in input) {
-            frameData = bytesToFrameData(input.bytes);
-        } else {
-            frameData = input.data;
-        }
-
-        if (!frameData.point || !frameData.xaxis || !frameData.yaxis) {
-            throw new Error(
-                "Invalid FrameData: Missing required properties (point, xaxis, or yaxis).",
-            );
-        }
-        this.data = frameData;
+  constructor(input: { bytes: Uint8Array } | { data: FrameData }) {
+    let frameData: FrameData;
+    if ("bytes" in input) {
+      frameData = bytesToFrameData(input.bytes);
+    } else {
+      frameData = input.data;
     }
 
-    get bytes(): Uint8Array {
-        return frameDataToBytes(this.data);
+    if (!frameData.point || !frameData.xaxis || !frameData.yaxis) {
+      throw new Error(
+        "Invalid FrameData: Missing required properties (point, xaxis, or yaxis).",
+      );
     }
+    this.data = frameData;
+  }
 
-    get guid(): string {
-        return this.data.guid;
-    }
+  get bytes(): Uint8Array {
+    return frameDataToBytes(this.data);
+  }
 
-    get name(): string {
-        return this.data.name;
-    }
+  get guid(): string {
+    return this.data.guid;
+  }
 
-    get point(): Point {
-        if (!this._point) {
-            this._point = new Point({ data: this.data.point! });
-        }
-        return this._point;
-    }
+  get name(): string {
+    return this.data.name;
+  }
 
-    get xaxis(): Vector {
-        if (!this._xaxis) {
-            this._xaxis = new Vector({ data: this.data.xaxis! });
-        }
-        return this._xaxis;
+  get point(): Point {
+    if (!this._point) {
+      this._point = new Point({ data: this.data.point! });
     }
+    return this._point;
+  }
 
-    get yaxis(): Vector {
-        if (!this._yaxis) {
-            this._yaxis = new Vector({ data: this.data.yaxis! });
-        }
-        return this._yaxis;
+  get xaxis(): Vector {
+    if (!this._xaxis) {
+      this._xaxis = new Vector({ data: this.data.xaxis! });
     }
+    return this._xaxis;
+  }
+
+  get yaxis(): Vector {
+    if (!this._yaxis) {
+      this._yaxis = new Vector({ data: this.data.yaxis! });
+    }
+    return this._yaxis;
+  }
 }
 
 export function bytesToFrameData(bytes: Uint8Array): FrameData {
-    return FrameData.decode(bytes);
+  return FrameData.decode(bytes);
 }
 
 export function frameDataToBytes(frame: FrameData): Uint8Array {
-    return FrameData.encode(frame).finish();
+  return FrameData.encode(frame).finish();
 }

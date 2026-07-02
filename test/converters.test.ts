@@ -15,7 +15,7 @@ import {
   boxDataToBytes,
   bytesToBoxData,
 } from "../src/geometry";
-import {
+import type {
   PointData,
   VectorData,
   FrameData,

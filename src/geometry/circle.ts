@@ -2,51 +2,53 @@ import { CircleData } from "../generated/compas_pb/data/geometry";
 import { Frame } from "./frame";
 
 export class Circle {
-    public readonly data: CircleData;
-    private _frame?: Frame;
+  public readonly data: CircleData;
+  private _frame?: Frame;
 
-    constructor(input: { bytes: Uint8Array } | { data: CircleData }) {
-        let circleData: CircleData;
-        if ("bytes" in input) {
-            circleData = bytesToCircleData(input.bytes);
-        } else {
-            circleData = input.data;
-        }
-
-        if (!circleData.radius || !circleData.frame) {
-            throw new Error("Invalid CircleData: Missing required properties (radius or frame).");
-        }
-        this.data = circleData;
+  constructor(input: { bytes: Uint8Array } | { data: CircleData }) {
+    let circleData: CircleData;
+    if ("bytes" in input) {
+      circleData = bytesToCircleData(input.bytes);
+    } else {
+      circleData = input.data;
     }
 
-    get bytes(): Uint8Array {
-        return circleDataToBytes(this.data);
+    if (!circleData.radius || !circleData.frame) {
+      throw new Error(
+        "Invalid CircleData: Missing required properties (radius or frame).",
+      );
     }
+    this.data = circleData;
+  }
 
-    get guid(): string {
-        return this.data.guid;
-    }
+  get bytes(): Uint8Array {
+    return circleDataToBytes(this.data);
+  }
 
-    get name(): string {
-        return this.data.name;
-    }
+  get guid(): string {
+    return this.data.guid;
+  }
 
-    get radius(): number {
-        return this.data.radius;
-    }
+  get name(): string {
+    return this.data.name;
+  }
 
-    get frame(): Frame {
-        if (!this._frame) {
-            this._frame = new Frame({ data: this.data.frame! });
-        }
-        return this._frame;
+  get radius(): number {
+    return this.data.radius;
+  }
+
+  get frame(): Frame {
+    if (!this._frame) {
+      this._frame = new Frame({ data: this.data.frame! });
     }
+    return this._frame;
+  }
 }
 
 export function bytesToCircleData(bytes: Uint8Array): CircleData {
-    return CircleData.decode(bytes);
+  return CircleData.decode(bytes);
 }
 
 export function circleDataToBytes(circle: CircleData): Uint8Array {
-    return CircleData.encode(circle).finish();
+  return CircleData.encode(circle).finish();
 }
