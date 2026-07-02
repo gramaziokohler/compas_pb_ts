@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.5...compas-pb-ts-v1.2.0) (2026-07-02)
+
+### ⚠️ BREAKING CHANGES
+
+* **geometry:** remove buildGeometry methods and Three.js dependency
+* Remove Three.js dependency throughout the library
+
+### Features
+
+* Refactored analyzer to simplify message processing ([9c276c2](https://github.com/gramaziokohler/compas_pb_ts/commit/9c276c26625d492fb8519d7d015578851d1a34e5))
+
+### Chores
+
+* remove build geometry methods from all geometry classes ([35f6046](https://github.com/gramaziokohler/compas_pb_ts/commit/35f6046157161f3537549804a94283ec4e108044))
+* remove unused three.js type dependency ([baaa83f](https://github.com/gramaziokohler/compas_pb_ts/commit/baaa83fd10f29a2319daf08bd0e2e10c47b2beab))
+
 ## [1.1.5](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.1.4...compas-pb-ts-v1.1.5) (2026-05-28)
 
 

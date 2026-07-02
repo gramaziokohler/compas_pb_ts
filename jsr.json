@@ -1,13 +1,9 @@
 {
-  "name": "@gramaziokohler/compas-pb-ts",
-  "version": "1.1.5",
-  "license": "MIT",
-  "exports": "./src/index.ts",
-  "publish": {
-    "include": [
-      "LICENSE",
-      "README.md",
-      "src/**/*.ts"
-    ]
-  }
+    "name": "@gramaziokohler/compas-pb-ts",
+    "version": "1.2.0",
+    "license": "MIT",
+    "exports": "./src/index.ts",
+    "publish": {
+        "include": ["LICENSE", "README.md", "src/**/*.ts"]
+    }
 }
