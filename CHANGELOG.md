@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.3.0...compas-pb-ts-v1.3.1) (2026-07-02)
+
+
+### Bug Fixes
+
+* add debugging note about preserved class names ([39ba15b](https://github.com/gramaziokohler/compas_pb_ts/commit/39ba15bee35ea3ee573548ac220d8f020768f99b))
+
 ## [1.3.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.2.1...compas-pb-ts-v1.3.0) (2026-07-02)
 
 
