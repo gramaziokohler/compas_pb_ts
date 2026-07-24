@@ -1,4 +1,5 @@
 import { ListData } from "../generated/compas_pb/data/message";
+import { resolveListData } from "../analyzers/data";
 
 export class List {
   public readonly data: ListData;
@@ -19,7 +20,7 @@ export class List {
   }
 
   get asList(): any[] {
-    return this.data.items.map((item) => item);
+    return resolveListData(this.data);
   }
 }
 export function bytesToListData(bytes: Uint8Array): ListData {

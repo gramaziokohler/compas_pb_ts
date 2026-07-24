@@ -1,5 +1,10 @@
 import type { Any } from "../generated/google/protobuf/any";
-import { MessageData } from "../generated/compas_pb/data/message";
+import {
+  MessageData,
+  ListData,
+  DictData,
+  type AnyData,
+} from "../generated/compas_pb/data/message";
 
 import { TYPE_MAP, type Constructor } from "./typemap";
 
@@ -55,4 +60,53 @@ function findConstructor(data: Any): Constructor | null {
   const typeName = typeUrl.split(".").slice(-1)[0];
   const constructor = TYPE_MAP.get(typeName);
   return constructor || null;
+}
+
+export function resolveAnyData(item: AnyData): any {
+  /**
+   * Fully materializes an AnyData item into a plain value.
+   *
+   * Unlike a shallow read of `.value`/`.message`/`.fallback`, this recurses
+   * into nested ListData/DictData payloads (packed as `Any`) so that lists
+   * and dicts nested inside a Dictionary or List come back as plain arrays
+   * and objects instead of raw, still-packed AnyData.
+   *
+   * @param {AnyData} item - The AnyData item to resolve.
+   * @returns {any} - The resolved value: a primitive, a plain array/object,
+   * a wrapper class instance (e.g. Point, Mesh), or null/undefined.
+   */
+  if (item.value !== undefined) {
+    return item.value;
+  }
+  if (item.message !== undefined) {
+    return resolveAny(item.message);
+  }
+  if (item.fallback?.data !== undefined) {
+    return resolveDictData(item.fallback.data);
+  }
+  return undefined;
+}
+
+function resolveAny(any: Any): any {
+  const typeName = any.typeUrl.split(".").slice(-1)[0];
+  if (typeName === "ListData") {
+    return resolveListData(ListData.decode(any.value));
+  }
+  if (typeName === "DictData") {
+    return resolveDictData(DictData.decode(any.value));
+  }
+  const constructor = TYPE_MAP.get(typeName);
+  return constructor ? new constructor({ bytes: any.value }) : null;
+}
+
+export function resolveListData(listData: ListData): any[] {
+  return listData.items.map(resolveAnyData);
+}
+
+export function resolveDictData(dictData: DictData): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+  for (const key of Object.keys(dictData.items)) {
+    result[key] = resolveAnyData(dictData.items[key]);
+  }
+  return result;
 }

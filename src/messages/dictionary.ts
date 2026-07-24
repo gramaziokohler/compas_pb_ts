@@ -1,4 +1,5 @@
 import { DictData } from "../generated/compas_pb/data/message";
+import { resolveDictData } from "../analyzers/data";
 
 export class Dictionary {
   public readonly data: DictData;
@@ -19,13 +20,7 @@ export class Dictionary {
   }
 
   get asDict(): { [key: string]: any } {
-    const result: { [key: string]: any } = {};
-    for (const key in this.data.items) {
-      if (Object.hasOwn(this.data.items, key)) {
-        result[key] = this.data.items[key];
-      }
-    }
-    return result;
+    return resolveDictData(this.data);
   }
 }
 export function bytesToDictData(bytes: Uint8Array): DictData {
