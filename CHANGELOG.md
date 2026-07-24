@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.3.1...compas-pb-ts-v1.4.0) (2026-07-24)
+
+
+### Features
+
+* add List message wrapper mirroring Dictionary ([7fc896d](https://github.com/gramaziokohler/compas_pb_ts/commit/7fc896dfcd516298358e7f78d4ab79406be5001e))
+
 ## [1.3.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.3.0...compas-pb-ts-v1.3.1) (2026-07-02)
 
 
