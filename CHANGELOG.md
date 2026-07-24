@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.4.0...compas-pb-ts-v1.4.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* recursively resolve nested AnyData in Dictionary and List ([26edafb](https://github.com/gramaziokohler/compas_pb_ts/commit/26edafbe6fe4c537d8a20cb0c56fef965c05c8a6))
+
 ## [1.4.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.3.1...compas-pb-ts-v1.4.0) (2026-07-24)
 
 
