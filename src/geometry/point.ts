@@ -55,3 +55,25 @@ export function bytesToPointData(bytes: Uint8Array): PointData {
 export function pointDataToBytes(point: PointData): Uint8Array {
   return PointData.encode(point).finish();
 }
+
+export function pointsFromFlatCoordinates(coordinates: number[]): Point[] {
+  if (coordinates.length % 3 !== 0) {
+    throw new Error("Invalid coordinate array: expected x, y, z triplets.");
+  }
+
+  const points: Point[] = [];
+  for (let index = 0; index < coordinates.length; index += 3) {
+    points.push(
+      new Point({
+        data: {
+          guid: "",
+          name: "",
+          x: coordinates[index],
+          y: coordinates[index + 1],
+          z: coordinates[index + 2],
+        },
+      }),
+    );
+  }
+  return points;
+}

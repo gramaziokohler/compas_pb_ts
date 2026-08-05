@@ -1,5 +1,5 @@
 import { MeshData } from "../generated/compas_pb/data/datastructures";
-import { Point } from "../geometry/point";
+import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { MeshFaceList } from "./facelist";
 
 export class Mesh {
@@ -14,10 +14,15 @@ export class Mesh {
       meshData = input.data;
     }
 
-    if (!meshData.vertices || !meshData.faces) {
-      throw new Error(
-        "Invalid MeshData: Missing required properties (vertices or faces).",
-      );
+    const faceVertexCount = meshData.faceSizes.reduce(
+      (total, size) => total + size,
+      0,
+    );
+    if (
+      meshData.vertices.length % 3 !== 0 ||
+      faceVertexCount !== meshData.faceVertices.length
+    ) {
+      throw new Error("Invalid MeshData: malformed vertices or face arrays.");
     }
     this.data = meshData;
   }
@@ -42,20 +47,18 @@ export class Mesh {
 
   get vertices(): Point[] {
     if (!this._vertices) {
-      this._vertices = [];
-      for (const vertexData of this.data.vertices!) {
-        const point = new Point({ data: vertexData });
-        this._vertices.push(point);
-      }
+      this._vertices = pointsFromFlatCoordinates(this.data.vertices);
     }
     return this._vertices;
   }
 
   get faces(): MeshFaceList[] {
     const faces: MeshFaceList[] = [];
-    for (const faceData of this.data.faces!) {
-      const face = new MeshFaceList({ data: faceData });
-      faces.push(face);
+    let offset = 0;
+    for (const size of this.data.faceSizes) {
+      const indices = this.data.faceVertices.slice(offset, offset + size);
+      faces.push(new MeshFaceList({ data: { indices } }));
+      offset += size;
     }
     return faces;
   }
