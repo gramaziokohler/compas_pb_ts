@@ -32,7 +32,9 @@
     "coverage": "vitest run --coverage",
     "size": "size-limit",
     "prepublishOnly": "npm run lint && npm test && npm run build",
-    "proto": "node scripts/proto-gen.mjs"
+    "proto": "node scripts/proto-gen.mjs",
+    "proto:sync": "node scripts/proto-sync.mjs",
+    "proto:check": "node scripts/proto-check.mjs"
   },
   "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
   "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",

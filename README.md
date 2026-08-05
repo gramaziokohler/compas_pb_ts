@@ -87,3 +87,31 @@ pnpm lint
 pnpm test
 pnpm build
 ```
+
+### Updating protobuf schemas
+
+`compas_pb` is the canonical schema source. This repository keeps a generated,
+pinned snapshot described by `proto/upstream.json`; do not edit the snapshot or
+wire-version constant by hand.
+
+To update to a released `compas_pb` tag and regenerate the TypeScript codecs:
+
+```sh
+npm run proto:sync -- --ref v1.0.0
+npm run proto
+npm run proto:check
+```
+
+When a local clone is available, the same operation can run without fetching
+schema contents from GitHub:
+
+```sh
+npm run proto:sync -- --ref v1.0.0 --source ../compas_pb
+npm run proto:check -- --source ../compas_pb
+```
+
+The sync records the resolved commit and derives `COMPAS_PB_VERSION` from the
+selected Python release. CI verifies both the schema snapshot and regenerated
+code against that immutable commit. The only normalization is the protobuf
+import prefix (`compas_pb/generated` to `compas_pb/data`), which preserves this
+package's existing generated-module layout.

@@ -33,6 +33,13 @@ jobs:
       - uses: biomejs/setup-biome@v2
       - run: biome ci .
 
+      # Protobuf schema and generated-code drift
+      - uses: arduino/setup-protoc@v3
+        with:
+          version: "34.0"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm proto:check
+
       # Build
       - run: pnpm build
 

@@ -8,9 +8,8 @@ import {
 } from "../generated/compas_pb/data/message";
 
 import { TYPE_MAP, type Constructor } from "./typemap";
-
-/** Version of the Python compas_pb message format represented by these codecs. */
-export const COMPAS_PB_VERSION = "1.0.0";
+export { COMPAS_PB_VERSION } from "../generated/compas_pb/version";
+import { COMPAS_PB_VERSION } from "../generated/compas_pb/version";
 
 export interface ProtobufObject {
   readonly bytes: Uint8Array;
