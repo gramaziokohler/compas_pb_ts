@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.4.1...compas-pb-ts-v2.0.0) (2026-08-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* support compas_pb 1.0 wire format
+
+### Features
+
+* support compas_pb 1.0 wire format ([17ce274](https://github.com/gramaziokohler/compas_pb_ts/commit/17ce274e472d747ca8bf068682973e2d8950ef43))
+* Upgrade compas_pb to 1.0 and add pbDumpBytes/pbLoadBytes ([b36cbc7](https://github.com/gramaziokohler/compas_pb_ts/commit/b36cbc791c8b6d64b487959712d935ff0634016d))
+
 ## [1.4.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.4.0...compas-pb-ts-v1.4.1) (2026-07-24)
 
 
