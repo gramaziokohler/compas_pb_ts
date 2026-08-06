@@ -1,5 +1,5 @@
 import { PolyhedronData } from "../generated/compas_pb/data/datastructures";
-import { Point } from "../geometry/point";
+import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { PolyhedronFace } from "./face";
 
 export class Polyhedron {
@@ -43,11 +43,7 @@ export class Polyhedron {
 
   get vertices(): Point[] {
     if (!this._points) {
-      this._points = [];
-      for (const pointData of this.data.vertices!) {
-        const point = new Point({ data: pointData });
-        this._points.push(point);
-      }
+      this._points = pointsFromFlatCoordinates(this.data.vertices);
     }
     return this._points;
   }

@@ -1,5 +1,5 @@
 import { BezierData } from "../generated/compas_pb/data/geometry";
-import { Point } from "./point";
+import { type Point, pointsFromFlatCoordinates } from "./point";
 
 export class Bezier {
   public readonly data: BezierData;
@@ -33,11 +33,7 @@ export class Bezier {
 
   get points(): Point[] {
     if (!this._points) {
-      this._points = [];
-      for (const pointData of this.data.points) {
-        const point = new Point({ data: pointData! });
-        this._points.push(point);
-      }
+      this._points = pointsFromFlatCoordinates(this.data.points);
     }
     return this._points;
   }

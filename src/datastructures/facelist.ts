@@ -1,4 +1,8 @@
-import { FaceList } from "../generated/compas_pb/data/datastructures";
+import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
+
+export interface FaceList {
+  indices: number[];
+}
 
 export class MeshFaceList {
   public readonly data: FaceList;
@@ -27,9 +31,29 @@ export class MeshFaceList {
 }
 
 export function bytesToFaceList(bytes: Uint8Array): FaceList {
-  return FaceList.decode(bytes);
+  const reader = new BinaryReader(bytes);
+  const indices: number[] = [];
+  while (reader.pos < reader.len) {
+    const tag = reader.uint32();
+    if (tag === 8) {
+      indices.push(reader.uint32());
+    } else if (tag === 10) {
+      const end = reader.uint32() + reader.pos;
+      while (reader.pos < end) {
+        indices.push(reader.uint32());
+      }
+    } else {
+      reader.skip(tag & 7);
+    }
+  }
+  return { indices };
 }
 
 export function faceListToBytes(faceList: FaceList): Uint8Array {
-  return FaceList.encode(faceList).finish();
+  const writer = new BinaryWriter();
+  writer.uint32(10).fork();
+  for (const index of faceList.indices) {
+    writer.uint32(index);
+  }
+  return writer.join().finish();
 }

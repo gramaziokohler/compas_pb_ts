@@ -35,6 +35,7 @@ export const TYPE_MAP: Map<string, Constructor> = new Map<string, Constructor>([
   ["VectorData", GEOMETRY.Vector],
   ["MeshData", DATASTRUCTURES.Mesh],
   ["PolyhedronData", DATASTRUCTURES.Polyhedron],
+  ["GraphData", DATASTRUCTURES.Graph],
   ["DictData", MESSAGES.Dictionary],
   ["ListData", MESSAGES.List],
 ]);

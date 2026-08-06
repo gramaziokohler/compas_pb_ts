@@ -1,11 +1,7 @@
 import { RotationData } from "../generated/compas_pb/data/geometry";
-import { Vector } from "./vector";
-import { Point } from "./point";
 
 export class Rotation {
   public readonly data: RotationData;
-  private _axis?: Vector;
-  private _point?: Point;
 
   constructor(input: { bytes: Uint8Array } | { data: RotationData }) {
     let rotationData: RotationData;
@@ -15,10 +11,8 @@ export class Rotation {
       rotationData = input.data;
     }
 
-    if (!rotationData.axis || !rotationData.point || !rotationData.angle) {
-      throw new Error(
-        "Invalid RotationData: Missing required properties (axis or point).",
-      );
+    if (rotationData.matrix.length !== 16) {
+      throw new Error("Invalid RotationData: matrix must contain 16 values.");
     }
     this.data = rotationData;
   }
@@ -35,26 +29,8 @@ export class Rotation {
     return this.data.name;
   }
 
-  get axis(): Vector {
-    if (!this._axis) {
-      this._axis = new Vector({
-        data: this.data.axis!,
-      });
-    }
-    return this._axis;
-  }
-
-  get point(): Point {
-    if (!this._point) {
-      this._point = new Point({
-        data: this.data.point!,
-      });
-    }
-    return this._point;
-  }
-
-  get angle(): number {
-    return this.data.angle;
+  get matrix(): number[] {
+    return this.data.matrix;
   }
 }
 
