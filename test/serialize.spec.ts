@@ -191,3 +191,24 @@ describe("registry codecs", () => {
     expect(loaded.celsius).toBe(21.5);
   });
 });
+
+describe("already-encoded values", () => {
+  it("forwards an AnyData byte for byte instead of re-deriving it", () => {
+    // How a simulation stand-in echoes a param back as an output: the param may carry a
+    // native geometry message, which decoding and re-encoding would not preserve.
+    const original = create(AnyDataSchema, {
+      data: {
+        case: "message",
+        value: {
+          typeUrl: "type.googleapis.com/some.Native",
+          value: new Uint8Array([9, 8, 7]),
+        },
+      },
+    });
+
+    const forwarded = serializeAny(original);
+
+    expect(forwarded).toBe(original);
+    expect(pbLoadBytes(pbDump({ echoed: original }))).toEqual({ echoed: null });
+  });
+});

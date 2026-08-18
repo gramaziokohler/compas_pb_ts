@@ -81,6 +81,16 @@ export function serializeAny(value: unknown): AnyData {
   }
 
   if (typeof value === "object") {
+    // An AnyData that has already been encoded is forwarded byte for byte. A value read
+    // off the wire is not necessarily a container or a primitive -- compas_pb may have
+    // used a native message type this side has no reason to understand -- so re-deriving
+    // it from a decoded form would lose whatever shape it actually had.
+    if (
+      (value as { $typeName?: string }).$typeName === "compas_pb.data.AnyData"
+    ) {
+      return value as AnyData;
+    }
+
     const registration = findRegistrationForValue(value);
     if (registration) {
       return create(AnyDataSchema, {
