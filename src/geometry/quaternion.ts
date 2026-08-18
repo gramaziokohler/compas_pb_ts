@@ -1,4 +1,6 @@
-import { QuaternionData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { QuaternionData } from "../proto/compas_pb/generated/geometry_pb";
+import { QuaternionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Quaternion {
   public readonly data: QuaternionData;
@@ -54,9 +56,9 @@ export class Quaternion {
 }
 
 export function bytesToQuaternionData(bytes: Uint8Array): QuaternionData {
-  return QuaternionData.decode(bytes);
+  return fromBinary(QuaternionDataSchema, bytes);
 }
 
 export function quaternionDataToBytes(data: QuaternionData): Uint8Array {
-  return QuaternionData.encode(data).finish();
+  return toBinary(QuaternionDataSchema, data);
 }

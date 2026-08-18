@@ -1,4 +1,6 @@
-import { TranslationData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { TranslationData } from "../proto/compas_pb/generated/geometry_pb";
+import { TranslationDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Vector } from "./vector";
 
 export class Translation {
@@ -44,9 +46,9 @@ export class Translation {
 }
 
 export function bytesToTranslationData(bytes: Uint8Array): TranslationData {
-  return TranslationData.decode(bytes);
+  return fromBinary(TranslationDataSchema, bytes);
 }
 
 export function translationDataToBytes(data: TranslationData): Uint8Array {
-  return TranslationData.encode(data).finish();
+  return toBinary(TranslationDataSchema, data);
 }

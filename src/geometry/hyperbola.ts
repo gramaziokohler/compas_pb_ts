@@ -1,4 +1,6 @@
-import { HyperbolaData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { HyperbolaData } from "../proto/compas_pb/generated/geometry_pb";
+import { HyperbolaDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Hyperbola {
@@ -50,9 +52,9 @@ export class Hyperbola {
 }
 
 export function bytesToHyperbolaData(bytes: Uint8Array): HyperbolaData {
-  return HyperbolaData.decode(bytes);
+  return fromBinary(HyperbolaDataSchema, bytes);
 }
 
 export function hyperbolaDataToBytes(data: HyperbolaData): Uint8Array {
-  return HyperbolaData.encode(data).finish();
+  return toBinary(HyperbolaDataSchema, data);
 }

@@ -1,4 +1,6 @@
-import { BezierData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { BezierData } from "../proto/compas_pb/generated/geometry_pb";
+import { BezierDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
 
 export class Bezier {
@@ -39,9 +41,9 @@ export class Bezier {
   }
 }
 export function bytesToBezierData(bytes: Uint8Array): BezierData {
-  return BezierData.decode(bytes);
+  return fromBinary(BezierDataSchema, bytes);
 }
 
 export function bezierDataToBytes(data: BezierData): Uint8Array {
-  return BezierData.encode(data).finish();
+  return toBinary(BezierDataSchema, data);
 }

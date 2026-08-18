@@ -1,4 +1,6 @@
-import { PolygonData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PolygonData } from "../proto/compas_pb/generated/geometry_pb";
+import { PolygonDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
 
 export class Polygon {
@@ -40,9 +42,9 @@ export class Polygon {
 }
 
 export function bytesToPolygonData(bytes: Uint8Array): PolygonData {
-  return PolygonData.decode(bytes);
+  return fromBinary(PolygonDataSchema, bytes);
 }
 
 export function polygonDataToBytes(data: PolygonData): Uint8Array {
-  return PolygonData.encode(data).finish();
+  return toBinary(PolygonDataSchema, data);
 }

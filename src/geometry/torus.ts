@@ -1,4 +1,6 @@
-import { TorusData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { TorusData } from "../proto/compas_pb/generated/geometry_pb";
+import { TorusDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Torus {
@@ -50,9 +52,9 @@ export class Torus {
 }
 
 export function bytesToTorusData(bytes: Uint8Array): TorusData {
-  return TorusData.decode(bytes);
+  return fromBinary(TorusDataSchema, bytes);
 }
 
 export function torusDataToBytes(data: TorusData): Uint8Array {
-  return TorusData.encode(data).finish();
+  return toBinary(TorusDataSchema, data);
 }

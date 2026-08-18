@@ -33,12 +33,10 @@ jobs:
       - uses: biomejs/setup-biome@v2
       - run: biome ci .
 
-      # Protobuf schema and generated-code drift
-      - uses: arduino/setup-protoc@v3
-        with:
-          version: "34.0"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm proto:check
+      # Generated-bindings drift: re-fetch the pinned release artifact and fail if the
+      # committed output differs. No protoc here -- compas_pb generates, this repo consumes.
+      - run: pnpm proto
+      - run: git diff --exit-code src/proto
 
       # Build
       - run: pnpm build

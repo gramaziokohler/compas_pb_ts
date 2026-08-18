@@ -1,5 +1,7 @@
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
 import { resolveAnyData } from "../analyzers/data";
-import { GraphData } from "../generated/compas_pb/data/datastructures";
+import type { GraphData } from "../proto/compas_pb/generated/datastructures_pb";
+import { GraphDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 
 export class Graph {
   public readonly data: GraphData;
@@ -26,9 +28,9 @@ export class Graph {
 }
 
 export function bytesToGraphData(bytes: Uint8Array): GraphData {
-  return GraphData.decode(bytes);
+  return fromBinary(GraphDataSchema, bytes);
 }
 
 export function graphDataToBytes(data: GraphData): Uint8Array {
-  return GraphData.encode(data).finish();
+  return toBinary(GraphDataSchema, data);
 }

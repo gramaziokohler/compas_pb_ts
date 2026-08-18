@@ -1,4 +1,6 @@
-import { SphereData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { SphereData } from "../proto/compas_pb/generated/geometry_pb";
+import { SphereDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Sphere {
@@ -46,9 +48,9 @@ export class Sphere {
 }
 
 export function bytesToSphereData(bytes: Uint8Array): SphereData {
-  return SphereData.decode(bytes);
+  return fromBinary(SphereDataSchema, bytes);
 }
 
 export function sphereDataToBytes(data: SphereData): Uint8Array {
-  return SphereData.encode(data).finish();
+  return toBinary(SphereDataSchema, data);
 }

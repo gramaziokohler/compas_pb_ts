@@ -1,4 +1,6 @@
-import { FrameData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { FrameData } from "../proto/compas_pb/generated/geometry_pb";
+import { FrameDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Point } from "./point";
 import { Vector } from "./vector";
 
@@ -59,9 +61,9 @@ export class Frame {
 }
 
 export function bytesToFrameData(bytes: Uint8Array): FrameData {
-  return FrameData.decode(bytes);
+  return fromBinary(FrameDataSchema, bytes);
 }
 
 export function frameDataToBytes(frame: FrameData): Uint8Array {
-  return FrameData.encode(frame).finish();
+  return toBinary(FrameDataSchema, frame);
 }

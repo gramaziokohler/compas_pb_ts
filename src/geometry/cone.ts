@@ -1,4 +1,6 @@
-import { ConeData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ConeData } from "../proto/compas_pb/generated/geometry_pb";
+import { ConeDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 export class Cone {
   public readonly data: ConeData;
@@ -49,9 +51,9 @@ export class Cone {
 }
 
 export function bytesToConeData(bytes: Uint8Array): ConeData {
-  return ConeData.decode(bytes);
+  return fromBinary(ConeDataSchema, bytes);
 }
 
 export function coneDataToBytes(data: ConeData): Uint8Array {
-  return ConeData.encode(data).finish();
+  return toBinary(ConeDataSchema, data);
 }

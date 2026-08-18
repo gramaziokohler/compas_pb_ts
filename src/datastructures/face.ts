@@ -1,4 +1,6 @@
-import { FaceData } from "../generated/compas_pb/data/datastructures";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { FaceData } from "../proto/compas_pb/generated/datastructures_pb";
+import { FaceDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 
 export class PolyhedronFace {
   public readonly data: FaceData;
@@ -29,10 +31,10 @@ export class PolyhedronFace {
 }
 
 export function bytesToFaceData(bytes: Uint8Array): FaceData {
-  const faceData = FaceData.decode(bytes);
+  const faceData = fromBinary(FaceDataSchema, bytes);
   return faceData;
 }
 
 export function faceDataToBytes(face: FaceData): Uint8Array {
-  return FaceData.encode(face).finish();
+  return toBinary(FaceDataSchema, face);
 }

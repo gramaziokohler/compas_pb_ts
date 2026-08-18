@@ -1,4 +1,6 @@
-import { ScaleData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ScaleData } from "../proto/compas_pb/generated/geometry_pb";
+import { ScaleDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Scale {
   public readonly data: ScaleData;
@@ -37,9 +39,9 @@ export class Scale {
 }
 
 export function bytesToScaleData(bytes: Uint8Array): ScaleData {
-  return ScaleData.decode(bytes);
+  return fromBinary(ScaleDataSchema, bytes);
 }
 
 export function scaleDataToBytes(data: ScaleData): Uint8Array {
-  return ScaleData.encode(data).finish();
+  return toBinary(ScaleDataSchema, data);
 }

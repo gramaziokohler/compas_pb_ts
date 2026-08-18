@@ -1,4 +1,6 @@
-import { RotationData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { RotationData } from "../proto/compas_pb/generated/geometry_pb";
+import { RotationDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Rotation {
   public readonly data: RotationData;
@@ -35,9 +37,9 @@ export class Rotation {
 }
 
 export function bytesToRotationData(bytes: Uint8Array): RotationData {
-  return RotationData.decode(bytes);
+  return fromBinary(RotationDataSchema, bytes);
 }
 
 export function rotationDataToBytes(data: RotationData): Uint8Array {
-  return RotationData.encode(data).finish();
+  return toBinary(RotationDataSchema, data);
 }

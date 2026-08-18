@@ -1,4 +1,6 @@
-import { PlaneData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PlaneData } from "../proto/compas_pb/generated/geometry_pb";
+import { PlaneDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Point } from "./point";
 import { Vector } from "./vector";
 
@@ -52,9 +54,9 @@ export class Plane {
 }
 
 export function bytesToPlaneData(bytes: Uint8Array): PlaneData {
-  return PlaneData.decode(bytes);
+  return fromBinary(PlaneDataSchema, bytes);
 }
 
 export function planeDataToBytes(plane: PlaneData): Uint8Array {
-  return PlaneData.encode(plane).finish();
+  return toBinary(PlaneDataSchema, plane);
 }

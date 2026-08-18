@@ -1,4 +1,6 @@
-import { CylinderData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { CylinderData } from "../proto/compas_pb/generated/geometry_pb";
+import { CylinderDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Cylinder {
@@ -50,9 +52,9 @@ export class Cylinder {
 }
 
 export function bytesToCylinderData(bytes: Uint8Array): CylinderData {
-  return CylinderData.decode(bytes);
+  return fromBinary(CylinderDataSchema, bytes);
 }
 
 export function cylinderDataToBytes(data: CylinderData): Uint8Array {
-  return CylinderData.encode(data).finish();
+  return toBinary(CylinderDataSchema, data);
 }

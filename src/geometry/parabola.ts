@@ -1,4 +1,6 @@
-import { ParabolaData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ParabolaData } from "../proto/compas_pb/generated/geometry_pb";
+import { ParabolaDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Parabola {
@@ -46,9 +48,9 @@ export class Parabola {
 }
 
 export function bytesToParabolaData(bytes: Uint8Array): ParabolaData {
-  return ParabolaData.decode(bytes);
+  return fromBinary(ParabolaDataSchema, bytes);
 }
 
 export function parabolaDataToBytes(data: ParabolaData): Uint8Array {
-  return ParabolaData.encode(data).finish();
+  return toBinary(ParabolaDataSchema, data);
 }

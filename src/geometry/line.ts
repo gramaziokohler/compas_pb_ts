@@ -1,4 +1,6 @@
-import { LineData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { LineData } from "../proto/compas_pb/generated/geometry_pb";
+import { LineDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Point } from "./point";
 
 export class Line {
@@ -49,9 +51,9 @@ export class Line {
 }
 
 export function bytesToLineData(bytes: Uint8Array): LineData {
-  return LineData.decode(bytes);
+  return fromBinary(LineDataSchema, bytes);
 }
 
 export function lineDataToBytes(line: LineData): Uint8Array {
-  return LineData.encode(line).finish();
+  return toBinary(LineDataSchema, line);
 }

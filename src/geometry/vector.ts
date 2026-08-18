@@ -1,4 +1,6 @@
-import { VectorData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { VectorData } from "../proto/compas_pb/generated/geometry_pb";
+import { VectorDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 export class Vector {
   public readonly data: VectorData;
 
@@ -48,9 +50,9 @@ export class Vector {
 }
 
 export function bytesToVectorData(bytes: Uint8Array): VectorData {
-  return VectorData.decode(bytes);
+  return fromBinary(VectorDataSchema, bytes);
 }
 
 export function vectorDataToBytes(vector: VectorData): Uint8Array {
-  return VectorData.encode(vector).finish();
+  return toBinary(VectorDataSchema, vector);
 }

@@ -1,4 +1,6 @@
-import { CapsuleData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { CapsuleData } from "../proto/compas_pb/generated/geometry_pb";
+import { CapsuleDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 export class Capsule {
   public readonly data: CapsuleData;
@@ -49,9 +51,9 @@ export class Capsule {
 }
 
 export function bytesToCapsuleData(bytes: Uint8Array): CapsuleData {
-  return CapsuleData.decode(bytes);
+  return fromBinary(CapsuleDataSchema, bytes);
 }
 
 export function capsuleDataToBytes(data: CapsuleData): Uint8Array {
-  return CapsuleData.encode(data).finish();
+  return toBinary(CapsuleDataSchema, data);
 }

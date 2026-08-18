@@ -1,8 +1,6 @@
 {
-  "repository": "https://github.com/gramaziokohler/compas_pb.git",
-  "ref": "v1.0.0",
-  "commit": "c0d3518f398cf4c4e55e37575140af95a5b33832",
-  "wireVersion": "1.0.0",
-  "schemaRoot": "src/compas_pb/protobuf_defs/compas_pb/generated",
-  "files": ["datastructures.proto", "geometry.proto", "message.proto"]
+  "repository": "https://github.com/compas-dev/compas_pb.git",
+  "ref": "v1.1.4",
+  "wireVersion": "1.1.4",
+  "generatorVersion": "2.14.0"
 }

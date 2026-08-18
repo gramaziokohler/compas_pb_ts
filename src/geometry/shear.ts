@@ -1,4 +1,6 @@
-import { ShearData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ShearData } from "../proto/compas_pb/generated/geometry_pb";
+import { ShearDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Shear {
   public readonly data: ShearData;
@@ -37,9 +39,9 @@ export class Shear {
 }
 
 export function bytesToShearData(bytes: Uint8Array): ShearData {
-  return ShearData.decode(bytes);
+  return fromBinary(ShearDataSchema, bytes);
 }
 
 export function shearDataToBytes(data: ShearData): Uint8Array {
-  return ShearData.encode(data).finish();
+  return toBinary(ShearDataSchema, data);
 }

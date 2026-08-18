@@ -1,4 +1,6 @@
-import { BoxData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { BoxData } from "../proto/compas_pb/generated/geometry_pb";
+import { BoxDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Box {
@@ -54,9 +56,9 @@ export class Box {
 }
 
 export function bytesToBoxData(bytes: Uint8Array): BoxData {
-  return BoxData.decode(bytes);
+  return fromBinary(BoxDataSchema, bytes);
 }
 
 export function boxDataToBytes(box: BoxData): Uint8Array {
-  return BoxData.encode(box).finish();
+  return toBinary(BoxDataSchema, box);
 }

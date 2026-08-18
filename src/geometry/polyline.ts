@@ -1,4 +1,6 @@
-import { PolylineData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PolylineData } from "../proto/compas_pb/generated/geometry_pb";
+import { PolylineDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
 
 export class Polyline {
@@ -42,9 +44,9 @@ export class Polyline {
 }
 
 export function bytesToPolylineData(bytes: Uint8Array): PolylineData {
-  return PolylineData.decode(bytes);
+  return fromBinary(PolylineDataSchema, bytes);
 }
 
 export function polylineDataToBytes(data: PolylineData): Uint8Array {
-  return PolylineData.encode(data).finish();
+  return toBinary(PolylineDataSchema, data);
 }

@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { describe, it, expect } from "vitest";
 import {
   pointDataToBytes,
@@ -19,66 +20,71 @@ import type {
   PointData,
   VectorData,
   FrameData,
-  PlaneData,
-  LineData,
-  CircleData,
-  BoxData,
-} from "../src/generated/compas_pb/data/geometry";
+} from "../src/proto/compas_pb/generated/geometry_pb";
+import {
+  BoxDataSchema,
+  CircleDataSchema,
+  FrameDataSchema,
+  LineDataSchema,
+  PlaneDataSchema,
+  PointDataSchema,
+  VectorDataSchema,
+} from "../src/proto/compas_pb/generated/geometry_pb";
 
 // Sample Data
 
-const originPoint: PointData = {
+const originPoint = create(PointDataSchema, {
   guid: "point-guid-1234",
   name: "Origin",
   x: 0,
   y: 0,
   z: 0,
-};
+});
 
-const otherPoint: PointData = {
+const otherPoint = create(PointDataSchema, {
   guid: "point-guid-5678",
   name: "OtherPoint",
   x: 1,
   y: 1,
   z: 1,
-};
+});
 
-const xAxisVector: VectorData = {
+const xAxisVector = create(VectorDataSchema, {
   guid: "vector-guid-5678",
   name: "X-Axis",
   x: 1,
   y: 0,
   z: 0,
-};
+});
 
-const yAxisVector: VectorData = {
+const yAxisVector = create(VectorDataSchema, {
   guid: "vector-guid-9101",
   name: "Y-Axis",
   x: 0,
   y: 1,
   z: 0,
-};
+});
 
-const originFrame: FrameData = {
+const originFrame = create(FrameDataSchema, {
   guid: "frame-guid-1234",
   name: "OriginFrame",
   point: originPoint,
   xaxis: xAxisVector,
   yaxis: yAxisVector,
-};
+});
 
 // Tests
 
 describe("GEOMETRIC PRIMITIVES", () => {
   it("PointData round trip", () => {
     // 1. Create the original data object
-    const originalPoint: PointData = {
+    const originalPoint = create(PointDataSchema, {
       guid: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
       name: "MyPoint",
       x: 1.23,
       y: 4.56,
       z: 7.89,
-    };
+    });
 
     // 2. Encode the object to a bytestream
     const bytes = pointDataToBytes(originalPoint);
@@ -96,13 +102,13 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("VectorData round trip", () => {
-    const originalVector: VectorData = {
+    const originalVector = create(VectorDataSchema, {
       guid: "f1e2d3c4-b5a6-7890-1234-567890abcdef",
       name: "MyVector",
       x: 9.87,
       y: 6.54,
       z: 3.21,
-    };
+    });
 
     const bytes = vectorDataToBytes(originalVector);
     const decodedVector = bytesToVectorData(bytes);
@@ -114,13 +120,13 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("FrameData round trip", () => {
-    const originalFrame: FrameData = {
+    const originalFrame = create(FrameDataSchema, {
       guid: "123e4567-e89b-12d3-a456-426614174000",
       name: "MyFrame",
       point: originPoint,
       xaxis: xAxisVector,
       yaxis: yAxisVector,
-    };
+    });
 
     const bytes = frameDataToBytes(originalFrame);
     const decodedFrame = bytesToFrameData(bytes);
@@ -132,12 +138,12 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("PlaneData round trip", () => {
-    const originalPlane: PlaneData = {
+    const originalPlane = create(PlaneDataSchema, {
       guid: "plane-guid-1234",
       name: "MyPlane",
       point: originPoint,
       normal: xAxisVector,
-    };
+    });
 
     const bytes = planeDataToBytes(originalPlane);
     const decodedPlane = bytesToPlaneData(bytes);
@@ -150,12 +156,12 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("LineData round trip", () => {
-    const originalLine: LineData = {
+    const originalLine = create(LineDataSchema, {
       guid: "line-guid-1234",
       name: "MyLine",
       start: originPoint,
       end: otherPoint,
-    };
+    });
 
     const bytes = lineDataToBytes(originalLine);
     const decodedLine = bytesToLineData(bytes);
@@ -168,12 +174,12 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("CircleData round trip", () => {
-    const originalCircle: CircleData = {
+    const originalCircle = create(CircleDataSchema, {
       guid: "circle-guid-1234",
       name: "MyCircle",
       radius: 42,
       frame: originFrame,
-    };
+    });
 
     const bytes = circleDataToBytes(originalCircle);
     const decodedCircle = bytesToCircleData(bytes);
@@ -186,14 +192,14 @@ describe("GEOMETRIC PRIMITIVES", () => {
   });
 
   it("BoxData round trip", () => {
-    const originalBox: BoxData = {
+    const originalBox = create(BoxDataSchema, {
       guid: "box-guid-1234",
       name: "MyBox",
       frame: originFrame,
       xsize: 10,
       ysize: 20,
       zsize: 30,
-    };
+    });
 
     const bytes = boxDataToBytes(originalBox);
     const decodedBox = bytesToBoxData(bytes);

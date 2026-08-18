@@ -1,4 +1,6 @@
-import { MeshData } from "../generated/compas_pb/data/datastructures";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MeshData } from "../proto/compas_pb/generated/datastructures_pb";
+import { MeshDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { MeshFaceList } from "./facelist";
 
@@ -65,10 +67,10 @@ export class Mesh {
 }
 
 export function bytesToMeshData(bytes: Uint8Array): MeshData {
-  const meshData = MeshData.decode(bytes);
+  const meshData = fromBinary(MeshDataSchema, bytes);
   return meshData;
 }
 
 export function meshDataToBytes(mesh: MeshData): Uint8Array {
-  return MeshData.encode(mesh).finish();
+  return toBinary(MeshDataSchema, mesh);
 }

@@ -1,4 +1,6 @@
-import { EllipseData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { EllipseData } from "../proto/compas_pb/generated/geometry_pb";
+import { EllipseDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Ellipse {
@@ -50,9 +52,9 @@ export class Ellipse {
 }
 
 export function bytesToEllipseData(bytes: Uint8Array): EllipseData {
-  return EllipseData.decode(bytes);
+  return fromBinary(EllipseDataSchema, bytes);
 }
 
 export function ellipseDataToBytes(data: EllipseData): Uint8Array {
-  return EllipseData.encode(data).finish();
+  return toBinary(EllipseDataSchema, data);
 }

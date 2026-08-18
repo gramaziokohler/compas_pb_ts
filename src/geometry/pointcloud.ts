@@ -1,4 +1,6 @@
-import { PointcloudData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PointcloudData } from "../proto/compas_pb/generated/geometry_pb";
+import { PointcloudDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
 
 export class Pointcloud {
@@ -42,9 +44,9 @@ export class Pointcloud {
 }
 
 export function bytesToPointCloudData(bytes: Uint8Array): PointcloudData {
-  return PointcloudData.decode(bytes);
+  return fromBinary(PointcloudDataSchema, bytes);
 }
 
 export function pointCloudDataToBytes(data: PointcloudData): Uint8Array {
-  return PointcloudData.encode(data).finish();
+  return toBinary(PointcloudDataSchema, data);
 }

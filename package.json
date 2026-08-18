@@ -32,9 +32,7 @@
     "coverage": "vitest run --coverage",
     "size": "size-limit",
     "prepublishOnly": "npm run lint && npm test && npm run build",
-    "proto": "node scripts/proto-gen.mjs",
-    "proto:sync": "node scripts/proto-sync.mjs",
-    "proto:check": "node scripts/proto-check.mjs"
+    "proto": "node scripts/proto-fetch.mjs"
   },
   "author": "Chen Kasirer <kasirer@arch.ethz.ch>",
   "funding": "https://github.com/gramaziokohler/compas_pb_ts?sponsor=1",
@@ -60,9 +58,7 @@
     "@size-limit/preset-small-lib": "^8.2.4",
     "@types/node": "^22.18.1",
     "@vitest/coverage-istanbul": "3.2.4",
-    "glob": "^11.0.3",
     "size-limit": "^8.2.4",
-    "ts-proto": "^2.11.1",
     "tsdown": "^0.15.12",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

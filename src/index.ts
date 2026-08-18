@@ -3,6 +3,6 @@ export * from "./datastructures";
 export * from "./geometry";
 export * from "./messages";
 
-export * as CompasDataStructures from "./generated/compas_pb/data/datastructures";
-export * as CompasGeometry from "./generated/compas_pb/data/geometry";
-export * as CompasMessages from "./generated/compas_pb/data/message";
+export * as CompasDataStructures from "./proto/compas_pb/generated/datastructures_pb";
+export * as CompasGeometry from "./proto/compas_pb/generated/geometry_pb";
+export * as CompasMessages from "./proto/compas_pb/generated/message_pb";

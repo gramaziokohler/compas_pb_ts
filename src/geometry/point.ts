@@ -1,4 +1,6 @@
-import { PointData } from "../generated/compas_pb/data/geometry";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PointData } from "../proto/compas_pb/generated/geometry_pb";
+import { PointDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Point {
   public readonly data: PointData;
@@ -49,11 +51,11 @@ export class Point {
 }
 
 export function bytesToPointData(bytes: Uint8Array): PointData {
-  return PointData.decode(bytes);
+  return fromBinary(PointDataSchema, bytes);
 }
 
 export function pointDataToBytes(point: PointData): Uint8Array {
-  return PointData.encode(point).finish();
+  return toBinary(PointDataSchema, point);
 }
 
 export function pointsFromFlatCoordinates(coordinates: number[]): Point[] {
@@ -65,13 +67,13 @@ export function pointsFromFlatCoordinates(coordinates: number[]): Point[] {
   for (let index = 0; index < coordinates.length; index += 3) {
     points.push(
       new Point({
-        data: {
+        data: create(PointDataSchema, {
           guid: "",
           name: "",
           x: coordinates[index],
           y: coordinates[index + 1],
           z: coordinates[index + 2],
-        },
+        }),
       }),
     );
   }

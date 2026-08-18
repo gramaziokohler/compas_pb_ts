@@ -1,4 +1,6 @@
-import { ReflectionData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ReflectionData } from "../proto/compas_pb/generated/geometry_pb";
+import { ReflectionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Reflection {
   public readonly data: ReflectionData;
@@ -37,9 +39,9 @@ export class Reflection {
 }
 
 export function bytesToReflectionData(bytes: Uint8Array): ReflectionData {
-  return ReflectionData.decode(bytes);
+  return fromBinary(ReflectionDataSchema, bytes);
 }
 
 export function reflectionDataToBytes(data: ReflectionData): Uint8Array {
-  return ReflectionData.encode(data).finish();
+  return toBinary(ReflectionDataSchema, data);
 }

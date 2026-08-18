@@ -1,10 +1,11 @@
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 
 import {
   Box,
   COMPAS_PB_VERSION,
   CompasMessages,
-  type CompasGeometry,
+  CompasGeometry,
   Dictionary,
   List,
   Point,
@@ -17,13 +18,13 @@ import {
 
 describe("public API", () => {
   it("exports geometry wrappers and generated data namespaces", () => {
-    const data: CompasGeometry.PointData = {
+    const data = create(CompasGeometry.PointDataSchema, {
       guid: "point-guid",
       name: "Point",
       x: 1,
       y: 2,
       z: 3,
-    };
+    });
 
     const point = new Point({ data });
     const decoded = bytesToPointData(pointDataToBytes(point.data));
@@ -35,7 +36,7 @@ describe("public API", () => {
 
   it("dumps a wrapper into a complete message envelope", () => {
     const box = new Box({
-      data: {
+      data: create(CompasGeometry.BoxDataSchema, {
         guid: "box-guid",
         name: "Box",
         frame: {
@@ -48,13 +49,13 @@ describe("public API", () => {
         xsize: 1,
         ysize: 2,
         zsize: 3,
-      },
+      }),
     });
 
     const bytes = pbDumpBytes(box);
     const decoded = getObjectFromMessage(bytes);
 
-    expect(CompasMessages.MessageData.decode(bytes).version).toBe(
+    expect(fromBinary(CompasMessages.MessageDataSchema, bytes).version).toBe(
       COMPAS_PB_VERSION,
     );
     expect(decoded).toBeInstanceOf(Box);
@@ -72,7 +73,7 @@ describe("public API", () => {
 
   it("loads geometry messages as wrapper instances", () => {
     const box = new Box({
-      data: {
+      data: create(CompasGeometry.BoxDataSchema, {
         guid: "box-guid",
         name: "Box",
         frame: {
@@ -83,7 +84,7 @@ describe("public API", () => {
         xsize: 1,
         ysize: 2,
         zsize: 3,
-      },
+      }),
     });
 
     const loaded = pbLoadBytes(pbDumpBytes(box));
@@ -96,38 +97,64 @@ describe("public API", () => {
 
   it("loads lists and dictionaries as recursive plain JavaScript values", () => {
     const nestedDictionary = new Dictionary({
-      data: {
+      data: create(CompasMessages.DictDataSchema, {
         items: {
-          enabled: { value: true },
-          count: { value: 3 },
+          enabled: {
+            data: {
+              case: "value",
+              value: { kind: { case: "boolValue", value: true } },
+            },
+          },
+          count: {
+            data: {
+              case: "value",
+              value: { kind: { case: "numberValue", value: 3 } },
+            },
+          },
         },
-      },
+      }),
     });
     const list = new List({
-      data: {
+      data: create(CompasMessages.ListDataSchema, {
         items: [
-          { value: "first" },
           {
-            message: {
-              typeUrl: "type.googleapis.com/compas_pb.data.DictData",
-              value: nestedDictionary.bytes,
+            data: {
+              case: "value",
+              value: { kind: { case: "stringValue", value: "first" } },
+            },
+          },
+          {
+            data: {
+              case: "message",
+              value: {
+                typeUrl: "type.googleapis.com/compas_pb.data.DictData",
+                value: nestedDictionary.bytes,
+              },
             },
           },
         ],
-      },
+      }),
     });
     const dictionary = new Dictionary({
-      data: {
+      data: create(CompasMessages.DictDataSchema, {
         items: {
-          name: { value: "example" },
+          name: {
+            data: {
+              case: "value",
+              value: { kind: { case: "stringValue", value: "example" } },
+            },
+          },
           values: {
-            message: {
-              typeUrl: "type.googleapis.com/compas_pb.data.ListData",
-              value: list.bytes,
+            data: {
+              case: "message",
+              value: {
+                typeUrl: "type.googleapis.com/compas_pb.data.ListData",
+                value: list.bytes,
+              },
             },
           },
         },
-      },
+      }),
     });
 
     const loadedList = pbLoadBytes(pbDumpBytes(list));
@@ -146,25 +173,57 @@ describe("public API", () => {
   });
 
   it("loads Python-style native containers and numeric values", () => {
-    const bytes = CompasMessages.MessageData.encode({
-      version: COMPAS_PB_VERSION,
-      data: {
-        dictValue: {
-          items: {
-            integer: { intValue: 3 },
-            floatingPoint: { doubleValue: 3 },
-            nested: {
-              listValue: {
-                items: [
-                  { value: "text" },
-                  { dictValue: { items: { enabled: { value: true } } } },
-                ],
+    const bytes = toBinary(
+      CompasMessages.MessageDataSchema,
+      create(CompasMessages.MessageDataSchema, {
+        version: COMPAS_PB_VERSION,
+        data: {
+          data: {
+            case: "dictValue",
+            value: {
+              items: {
+                integer: { data: { case: "intValue", value: 3n } },
+                floatingPoint: { data: { case: "doubleValue", value: 3 } },
+                nested: {
+                  data: {
+                    case: "listValue",
+                    value: {
+                      items: [
+                        {
+                          data: {
+                            case: "value",
+                            value: {
+                              kind: { case: "stringValue", value: "text" },
+                            },
+                          },
+                        },
+                        {
+                          data: {
+                            case: "dictValue",
+                            value: {
+                              items: {
+                                enabled: {
+                                  data: {
+                                    case: "value",
+                                    value: {
+                                      kind: { case: "boolValue", value: true },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
               },
             },
           },
         },
-      },
-    }).finish();
+      }),
+    );
 
     const loaded = pbLoadBytes(bytes);
 
@@ -182,25 +241,39 @@ describe("public API", () => {
   });
 
   it("accepts compatible patch versions and rejects unsafe envelopes", () => {
-    const list = new List({ data: { items: [{ value: 1 }] } });
-    const message = CompasMessages.MessageData.decode(pbDumpBytes(list));
+    const list = new List({
+      data: create(CompasMessages.ListDataSchema, {
+        items: [
+          {
+            data: {
+              case: "value",
+              value: { kind: { case: "numberValue", value: 1 } },
+            },
+          },
+        ],
+      }),
+    });
+    const message = fromBinary(
+      CompasMessages.MessageDataSchema,
+      pbDumpBytes(list),
+    );
 
-    const compatibleBytes = CompasMessages.MessageData.encode({
+    const compatibleBytes = toBinary(CompasMessages.MessageDataSchema, {
       ...message,
       version: "1.99.99",
-    }).finish();
+    });
     expect(pbLoadBytes(compatibleBytes)).toEqual([1]);
 
-    const unversionedBytes = CompasMessages.MessageData.encode({
+    const unversionedBytes = toBinary(CompasMessages.MessageDataSchema, {
       ...message,
       version: undefined,
-    }).finish();
+    });
     expect(() => pbLoadBytes(unversionedBytes)).toThrow("No version tag");
 
-    const incompatibleBytes = CompasMessages.MessageData.encode({
+    const incompatibleBytes = toBinary(CompasMessages.MessageDataSchema, {
       ...message,
       version: "2.0.0",
-    }).finish();
+    });
     expect(() => pbLoadBytes(incompatibleBytes)).toThrow(
       "Incompatible compas_pb wire format",
     );

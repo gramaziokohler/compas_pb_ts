@@ -1,4 +1,6 @@
-import { PolyhedronData } from "../generated/compas_pb/data/datastructures";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PolyhedronData } from "../proto/compas_pb/generated/datastructures_pb";
+import { PolyhedronDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { PolyhedronFace } from "./face";
 
@@ -61,10 +63,10 @@ export class Polyhedron {
 }
 
 export function bytesToPolyhedronData(bytes: Uint8Array): PolyhedronData {
-  const polyhedronData = PolyhedronData.decode(bytes);
+  const polyhedronData = fromBinary(PolyhedronDataSchema, bytes);
   return polyhedronData;
 }
 
 export function polyhedronDataToBytes(polyhedron: PolyhedronData): Uint8Array {
-  return PolyhedronData.encode(polyhedron).finish();
+  return toBinary(PolyhedronDataSchema, polyhedron);
 }

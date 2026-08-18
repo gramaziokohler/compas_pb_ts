@@ -1,4 +1,6 @@
-import { ProjectionData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ProjectionData } from "../proto/compas_pb/generated/geometry_pb";
+import { ProjectionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Projection {
   public readonly data: ProjectionData;
@@ -37,9 +39,9 @@ export class Projection {
 }
 
 export function bytesToProjectionData(bytes: Uint8Array): ProjectionData {
-  return ProjectionData.decode(bytes);
+  return fromBinary(ProjectionDataSchema, bytes);
 }
 
 export function projectionDataToBytes(data: ProjectionData): Uint8Array {
-  return ProjectionData.encode(data).finish();
+  return toBinary(ProjectionDataSchema, data);
 }

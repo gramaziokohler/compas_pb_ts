@@ -1,4 +1,6 @@
-import { CircleData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { CircleData } from "../proto/compas_pb/generated/geometry_pb";
+import { CircleDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
 
 export class Circle {
@@ -46,9 +48,9 @@ export class Circle {
 }
 
 export function bytesToCircleData(bytes: Uint8Array): CircleData {
-  return CircleData.decode(bytes);
+  return fromBinary(CircleDataSchema, bytes);
 }
 
 export function circleDataToBytes(circle: CircleData): Uint8Array {
-  return CircleData.encode(circle).finish();
+  return toBinary(CircleDataSchema, circle);
 }

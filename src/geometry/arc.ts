@@ -1,4 +1,6 @@
-import { ArcData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ArcData } from "../proto/compas_pb/generated/geometry_pb";
+import { ArcDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Circle } from "./circle";
 
 export class Arc {
@@ -50,9 +52,9 @@ export class Arc {
 }
 
 export function bytesToArcData(bytes: Uint8Array): ArcData {
-  return ArcData.decode(bytes);
+  return fromBinary(ArcDataSchema, bytes);
 }
 
 export function arcDataToBytes(data: ArcData): Uint8Array {
-  return ArcData.encode(data).finish();
+  return toBinary(ArcDataSchema, data);
 }
