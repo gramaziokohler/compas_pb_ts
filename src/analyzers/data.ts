@@ -14,16 +14,18 @@ import {
   MessageDataSchema,
 } from "../proto/compas_pb/generated/message_pb";
 
-import { TYPE_MAP, type Constructor } from "./typemap";
+import {
+  type Constructor,
+  findRegistration,
+  findRegistrationForTypeUrl,
+  findRegistrationForValue,
+  type ProtobufObject,
+} from "../registry";
+import "./typemap";
 export { COMPAS_PB_VERSION } from "../proto/version";
 import { COMPAS_PB_VERSION } from "../proto/version";
 
-/** Protobuf package the compas_pb schemas declare, used to build type URLs. */
-const PROTOBUF_PACKAGE = "compas_pb.data";
-
-export interface ProtobufObject {
-  readonly bytes: Uint8Array;
-}
+export type { ProtobufObject };
 
 /**
  * Serializes a supported COMPAS wrapper into the complete MessageData envelope.
@@ -42,7 +44,7 @@ export function pbDumpBytes(object: ProtobufObject): Uint8Array {
     data: {
       case: "message",
       value: create(AnySchema, {
-        typeUrl: `type.googleapis.com/${PROTOBUF_PACKAGE}.${typeName}`,
+        typeUrl: `type.googleapis.com/${typeName}`,
         value: object.bytes,
       }),
     },
@@ -104,12 +106,7 @@ function checkVersionCompatibility(version?: string): void {
 }
 
 function findTypeName(object: ProtobufObject): string | null {
-  for (const [typeName, constructor] of TYPE_MAP) {
-    if (object instanceof constructor) {
-      return typeName;
-    }
-  }
-  return null;
+  return findRegistrationForValue(object)?.fullName ?? null;
 }
 
 export function getObjectFromMessage(message: Uint8Array): any {
@@ -123,14 +120,12 @@ export function getObjectFromMessage(message: Uint8Array): any {
         : null;
     }
     case "dictValue":
-      return new (TYPE_MAP.get("DictData")!)({ data: data.data.value });
+      return newDictionary(data.data.value);
     case "listValue":
-      return new (TYPE_MAP.get("ListData")!)({ data: data.data.value });
+      return newList(data.data.value);
     case "fallback": {
       const fallbackData = data.data.value.data;
-      return fallbackData
-        ? new (TYPE_MAP.get("DictData")!)({ data: fallbackData })
-        : null;
+      return fallbackData ? newDictionary(fallbackData) : null;
     }
     default:
       return null;
@@ -147,8 +142,19 @@ export function unpackMessage(message: Uint8Array): Any {
 }
 
 function findConstructor(data: Any): Constructor | null {
-  const typeName = data.typeUrl.split(".").slice(-1)[0];
-  return TYPE_MAP.get(typeName) || null;
+  return findRegistrationForTypeUrl(data.typeUrl)?.constructor ?? null;
+}
+
+function newDictionary(data: DictData) {
+  return new (findRegistration("compas_pb.data.DictData")!.constructor)({
+    data,
+  });
+}
+
+function newList(data: ListData) {
+  return new (findRegistration("compas_pb.data.ListData")!.constructor)({
+    data,
+  });
 }
 
 /**
@@ -205,15 +211,18 @@ function resolvePrimitive(value: Value): any {
 }
 
 function resolveAny(any: Any): any {
-  const typeName = any.typeUrl.split(".").slice(-1)[0];
-  if (typeName === "ListData") {
+  const fullName = any.typeUrl.split("/").pop() ?? any.typeUrl;
+  // Legacy containers packed under Any rather than using the native list/dict arms.
+  if (fullName === "compas_pb.data.ListData") {
     return resolveListData(fromBinary(ListDataSchema, any.value));
   }
-  if (typeName === "DictData") {
+  if (fullName === "compas_pb.data.DictData") {
     return resolveDictData(fromBinary(DictDataSchema, any.value));
   }
-  const constructor = TYPE_MAP.get(typeName);
-  return constructor ? new constructor({ bytes: any.value }) : null;
+  const registration = findRegistration(fullName);
+  return registration
+    ? new registration.constructor({ bytes: any.value })
+    : null;
 }
 
 export function resolveListData(listData: ListData): any[] {

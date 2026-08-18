@@ -1,4 +1,5 @@
 export * from "./analyzers";
+export * from "./registry";
 export * from "./datastructures";
 export * from "./geometry";
 export * from "./messages";
