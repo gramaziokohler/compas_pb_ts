@@ -9,7 +9,7 @@ import {
   MessageDataSchema,
 } from "../proto/compas_pb/generated/message_pb";
 import { COMPAS_PB_VERSION } from "../proto/version";
-import { findRegistrationForValue, type ProtobufObject } from "../registry";
+import { findRegistrationForValue } from "../registry";
 import "./typemap";
 
 /**
@@ -24,12 +24,6 @@ import "./typemap";
  */
 function isCompasEnvelope(value: Record<string, unknown>): boolean {
   return typeof value.dtype === "string" && "data" in value;
-}
-
-function isProtobufObject(value: object): value is ProtobufObject {
-  return (
-    "bytes" in value && (value as ProtobufObject).bytes instanceof Uint8Array
-  );
 }
 
 /**
@@ -88,13 +82,13 @@ export function serializeAny(value: unknown): AnyData {
 
   if (typeof value === "object") {
     const registration = findRegistrationForValue(value);
-    if (registration && isProtobufObject(value)) {
+    if (registration) {
       return create(AnyDataSchema, {
         data: {
           case: "message",
           value: create(AnySchema, {
             typeUrl: `type.googleapis.com/${registration.fullName}`,
-            value: value.bytes,
+            value: registration.toBytes(value),
           }),
         },
       });

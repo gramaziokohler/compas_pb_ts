@@ -15,7 +15,6 @@ import {
 } from "../proto/compas_pb/generated/message_pb";
 
 import {
-  type Constructor,
   findRegistration,
   findRegistrationForTypeUrl,
   findRegistrationForValue,
@@ -114,9 +113,9 @@ export function getObjectFromMessage(message: Uint8Array): any {
 
   switch (data.data.case) {
     case "message": {
-      const objectConstructor = findConstructor(data.data.value);
-      return objectConstructor
-        ? new objectConstructor({ bytes: data.data.value.value })
+      const registration = findRegistrationForTypeUrl(data.data.value.typeUrl);
+      return registration
+        ? registration.fromBytes(data.data.value.value)
         : null;
     }
     case "dictValue":
@@ -139,10 +138,6 @@ export function unpackMessage(message: Uint8Array): Any {
     throw new Error("Message does not contain a protobuf Any value.");
   }
   return data.data.value;
-}
-
-function findConstructor(data: Any): Constructor | null {
-  return findRegistrationForTypeUrl(data.typeUrl)?.constructor ?? null;
 }
 
 function newDictionary(data: DictData) {
@@ -220,9 +215,7 @@ function resolveAny(any: Any): any {
     return resolveDictData(fromBinary(DictDataSchema, any.value));
   }
   const registration = findRegistration(fullName);
-  return registration
-    ? new registration.constructor({ bytes: any.value })
-    : null;
+  return registration ? registration.fromBytes(any.value) : null;
 }
 
 export function resolveListData(listData: ListData): any[] {

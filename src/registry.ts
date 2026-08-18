@@ -24,10 +24,25 @@ export interface ProtobufObject {
   readonly bytes: Uint8Array;
 }
 
+/**
+ * How a registered type converts to and from the bytes of its protobuf message.
+ *
+ * Python stores functions in its registry (`@pb_serializer` / `@pb_deserializer`) rather
+ * than requiring a class shape, which lets a domain model stay free of protobuf concerns.
+ * Supplying a codec here does the same. Omit it and the wrapper convention is assumed --
+ * a `bytes` getter and a `{ bytes }` constructor, which is how compas_pb's own types work.
+ */
+export interface Codec<T = any> {
+  toBytes(value: T): Uint8Array;
+  fromBytes(bytes: Uint8Array): T;
+}
+
 export interface Registration {
   /** Fully-qualified protobuf message name, e.g. `compas_pb.data.PointData`. */
   fullName: string;
   constructor: Constructor;
+  toBytes(value: any): Uint8Array;
+  fromBytes(bytes: Uint8Array): unknown;
 }
 
 const byConstructor = new Map<Constructor, Registration>();
@@ -38,11 +53,26 @@ const byFullName = new Map<string, Registration>();
  *
  * @param fullName Fully-qualified protobuf message name, matching the `type_url` suffix
  *   the other language runtimes write (Python's `DESCRIPTOR.full_name`).
- * @param constructor Wrapper class. It must expose a `bytes` getter and accept
- *   `{ bytes }` in its constructor, which is the contract the codec relies on.
+ * @param constructor The class instances of this type are, used to recognise values on
+ *   the way out and to key the prototype-chain lookup.
+ * @param codec How to convert to and from the message bytes. Omit it for the wrapper
+ *   convention: a `bytes` getter and a `{ bytes }` constructor.
  */
-export function registerType(fullName: string, constructor: Constructor): void {
-  const registration = { fullName, constructor };
+export function registerType<T>(
+  fullName: string,
+  constructor: Constructor<T>,
+  codec?: Codec<T>,
+): void {
+  const registration: Registration = {
+    fullName,
+    constructor,
+    toBytes: codec
+      ? (value: T) => codec.toBytes(value)
+      : (value: ProtobufObject) => value.bytes,
+    fromBytes: codec
+      ? (bytes: Uint8Array) => codec.fromBytes(bytes)
+      : (bytes: Uint8Array) => new constructor({ bytes }),
+  };
   byConstructor.set(constructor, registration);
   byFullName.set(fullName, registration);
 }

@@ -1,4 +1,4 @@
-import { create, toBinary } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -158,5 +158,36 @@ describe("registry", () => {
         "type.googleapis.com/example.v1.WidgetData",
       );
     }
+  });
+});
+
+describe("registry codecs", () => {
+  // A domain class that knows nothing about protobuf, registered with an explicit codec --
+  // the shape antikythera_ts uses, mirroring Python's @pb_serializer / @pb_deserializer.
+  class Reading {
+    constructor(readonly celsius: number) {}
+  }
+
+  it("routes a plain domain class through supplied codec functions", () => {
+    registerType("example.v1.ReadingData", Reading, {
+      toBytes: (reading) =>
+        toBinary(
+          AnyDataSchema,
+          create(AnyDataSchema, {
+            data: { case: "doubleValue", value: reading.celsius },
+          }),
+        ),
+      fromBytes: (bytes) => {
+        const decoded = fromBinary(AnyDataSchema, bytes);
+        return new Reading(
+          decoded.data.case === "doubleValue" ? decoded.data.value : Number.NaN,
+        );
+      },
+    });
+
+    const loaded = pbLoadBytes(pbDump(new Reading(21.5)));
+
+    expect(loaded).toBeInstanceOf(Reading);
+    expect(loaded.celsius).toBe(21.5);
   });
 });
