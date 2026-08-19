@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/compas-dev/compas_pb.git",
-  "ref": "v1.1.4",
-  "wireVersion": "1.1.4",
+  "ref": "v1.2.0",
+  "wireVersion": "1.2.0",
   "generatorVersion": "2.14.0"
 }
