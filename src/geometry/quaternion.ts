@@ -1,17 +1,16 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { QuaternionData } from "../proto/compas_pb/generated/geometry_pb";
 import { QuaternionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Quaternion is built from. */
+export type QuaternionInit = MessageInitShape<typeof QuaternionDataSchema>;
 
 export class Quaternion {
   public readonly data: QuaternionData;
 
-  constructor(input: { bytes: Uint8Array } | { data: QuaternionData }) {
-    let quaternionData: QuaternionData;
-    if ("bytes" in input) {
-      quaternionData = bytesToQuaternionData(input.bytes);
-    } else {
-      quaternionData = input.data;
-    }
+  constructor(init: QuaternionInit) {
+    const quaternionData = create(QuaternionDataSchema, init);
 
     if (
       !quaternionData.w ||
@@ -27,7 +26,12 @@ export class Quaternion {
   }
 
   get bytes(): Uint8Array {
-    return quaternionDataToBytes(this.data);
+    return quaternionToBytes(this);
+  }
+
+  /** Reads a Quaternion from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Quaternion {
+    return bytesToQuaternion(bytes);
   }
 
   get guid(): string {
@@ -55,10 +59,10 @@ export class Quaternion {
   }
 }
 
-export function bytesToQuaternionData(bytes: Uint8Array): QuaternionData {
-  return fromBinary(QuaternionDataSchema, bytes);
+export function bytesToQuaternion(bytes: Uint8Array): Quaternion {
+  return new Quaternion(fromBinary(QuaternionDataSchema, bytes));
 }
 
-export function quaternionDataToBytes(data: QuaternionData): Uint8Array {
-  return toBinary(QuaternionDataSchema, data);
+export function quaternionToBytes(quaternion: Quaternion): Uint8Array {
+  return toBinary(QuaternionDataSchema, quaternion.data);
 }

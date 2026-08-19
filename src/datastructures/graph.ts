@@ -1,17 +1,26 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { resolveAnyData } from "../analyzers/data";
 import type { GraphData } from "../proto/compas_pb/generated/datastructures_pb";
 import { GraphDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 
+/** The fields a Graph is built from. */
+export type GraphInit = MessageInitShape<typeof GraphDataSchema>;
+
 export class Graph {
   public readonly data: GraphData;
 
-  constructor(input: { bytes: Uint8Array } | { data: GraphData }) {
-    this.data = "bytes" in input ? bytesToGraphData(input.bytes) : input.data;
+  constructor(init: GraphInit) {
+    this.data = create(GraphDataSchema, init);
   }
 
   get bytes(): Uint8Array {
-    return graphDataToBytes(this.data);
+    return graphToBytes(this);
+  }
+
+  /** Reads a Graph from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Graph {
+    return bytesToGraph(bytes);
   }
 
   get guid(): string {
@@ -27,10 +36,10 @@ export class Graph {
   }
 }
 
-export function bytesToGraphData(bytes: Uint8Array): GraphData {
-  return fromBinary(GraphDataSchema, bytes);
+export function bytesToGraph(bytes: Uint8Array): Graph {
+  return new Graph(fromBinary(GraphDataSchema, bytes));
 }
 
-export function graphDataToBytes(data: GraphData): Uint8Array {
-  return toBinary(GraphDataSchema, data);
+export function graphToBytes(graph: Graph): Uint8Array {
+  return toBinary(GraphDataSchema, graph.data);
 }

@@ -21,6 +21,11 @@ export class List {
     return listDataToBytes(this.data);
   }
 
+  /** Reads a List from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): List {
+    return new List({ bytes });
+  }
+
   get asList(): any[] {
     return resolveListData(this.data);
   }

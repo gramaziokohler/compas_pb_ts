@@ -5,20 +5,19 @@ import {
   Box,
   COMPAS_PB_VERSION,
   CompasMessages,
-  CompasGeometry,
   Dictionary,
   List,
   Point,
-  bytesToPointData,
+  bytesToPoint,
   getObjectFromMessage,
   pbDumpBytes,
   pbLoadBytes,
-  pointDataToBytes,
+  pointToBytes,
 } from "../src";
 
 describe("public API", () => {
   it("exports geometry wrappers and generated data namespaces", () => {
-    const data = create(CompasGeometry.PointDataSchema, {
+    const point = new Point({
       guid: "point-guid",
       name: "Point",
       x: 1,
@@ -26,30 +25,27 @@ describe("public API", () => {
       z: 3,
     });
 
-    const point = new Point({ data });
-    const decoded = bytesToPointData(pointDataToBytes(point.data));
+    const decoded = bytesToPoint(pointToBytes(point));
 
     expect(point).toBeInstanceOf(Point);
     expect(Box).toBeTypeOf("function");
-    expect(decoded).toEqual(data);
+    expect(decoded).toEqual(point);
   });
 
   it("dumps a wrapper into a complete message envelope", () => {
     const box = new Box({
-      data: create(CompasGeometry.BoxDataSchema, {
-        guid: "box-guid",
-        name: "Box",
-        frame: {
-          guid: "frame-guid",
-          name: "Frame",
-          point: { guid: "point-guid", name: "Point", x: 0, y: 0, z: 0 },
-          xaxis: { guid: "xaxis-guid", name: "Vector", x: 1, y: 0, z: 0 },
-          yaxis: { guid: "yaxis-guid", name: "Vector", x: 0, y: 1, z: 0 },
-        },
-        xsize: 1,
-        ysize: 2,
-        zsize: 3,
-      }),
+      guid: "box-guid",
+      name: "Box",
+      frame: {
+        guid: "frame-guid",
+        name: "Frame",
+        point: { guid: "point-guid", name: "Point", x: 0, y: 0, z: 0 },
+        xaxis: { guid: "xaxis-guid", name: "Vector", x: 1, y: 0, z: 0 },
+        yaxis: { guid: "yaxis-guid", name: "Vector", x: 0, y: 1, z: 0 },
+      },
+      xsize: 1,
+      ysize: 2,
+      zsize: 3,
     });
 
     const bytes = pbDumpBytes(box);
@@ -73,18 +69,16 @@ describe("public API", () => {
 
   it("loads geometry messages as wrapper instances", () => {
     const box = new Box({
-      data: create(CompasGeometry.BoxDataSchema, {
-        guid: "box-guid",
-        name: "Box",
-        frame: {
-          point: { x: 0, y: 0, z: 0 },
-          xaxis: { x: 1, y: 0, z: 0 },
-          yaxis: { x: 0, y: 1, z: 0 },
-        },
-        xsize: 1,
-        ysize: 2,
-        zsize: 3,
-      }),
+      guid: "box-guid",
+      name: "Box",
+      frame: {
+        point: { x: 0, y: 0, z: 0 },
+        xaxis: { x: 1, y: 0, z: 0 },
+        yaxis: { x: 0, y: 1, z: 0 },
+      },
+      xsize: 1,
+      ysize: 2,
+      zsize: 3,
     });
 
     const loaded = pbLoadBytes(pbDumpBytes(box));

@@ -1,19 +1,18 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { CylinderData } from "../proto/compas_pb/generated/geometry_pb";
 import { CylinderDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Cylinder is built from. */
+export type CylinderInit = MessageInitShape<typeof CylinderDataSchema>;
 
 export class Cylinder {
   public readonly data: CylinderData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: CylinderData }) {
-    let cylinderData: CylinderData;
-    if ("bytes" in input) {
-      cylinderData = bytesToCylinderData(input.bytes);
-    } else {
-      cylinderData = input.data;
-    }
+  constructor(init: CylinderInit) {
+    const cylinderData = create(CylinderDataSchema, init);
 
     if (!cylinderData.radius || !cylinderData.height || !cylinderData.frame) {
       throw new Error(
@@ -24,7 +23,12 @@ export class Cylinder {
   }
 
   get bytes(): Uint8Array {
-    return cylinderDataToBytes(this.data);
+    return cylinderToBytes(this);
+  }
+
+  /** Reads a Cylinder from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Cylinder {
+    return bytesToCylinder(bytes);
   }
 
   get guid(): string {
@@ -45,16 +49,16 @@ export class Cylinder {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToCylinderData(bytes: Uint8Array): CylinderData {
-  return fromBinary(CylinderDataSchema, bytes);
+export function bytesToCylinder(bytes: Uint8Array): Cylinder {
+  return new Cylinder(fromBinary(CylinderDataSchema, bytes));
 }
 
-export function cylinderDataToBytes(data: CylinderData): Uint8Array {
-  return toBinary(CylinderDataSchema, data);
+export function cylinderToBytes(cylinder: Cylinder): Uint8Array {
+  return toBinary(CylinderDataSchema, cylinder.data);
 }

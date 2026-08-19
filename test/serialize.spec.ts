@@ -2,7 +2,6 @@ import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 
 import {
-  CompasGeometry,
   CompasMessages,
   Point,
   findRegistrationForTypeUrl,
@@ -12,7 +11,6 @@ import {
   serializeAny,
 } from "../src";
 
-const { PointDataSchema } = CompasGeometry;
 const { AnyDataSchema } = CompasMessages;
 
 /** The arm of the AnyData oneof a value landed in. */
@@ -77,15 +75,7 @@ describe("serializeAny", () => {
   });
 
   it("packs a registered wrapper into the message arm with its full type URL", () => {
-    const point = new Point({
-      data: create(PointDataSchema, {
-        guid: "p",
-        name: "Point",
-        x: 1,
-        y: 2,
-        z: 3,
-      }),
-    });
+    const point = new Point({ guid: "p", name: "Point", x: 1, y: 2, z: 3 });
 
     const encoded = serializeAny(point);
     expect(encoded.data.case).toBe("message");
@@ -109,10 +99,11 @@ describe("registry", () => {
   // A stand-in for what a plugin package (antikythera_ts, compas_timber_ts) registers:
   // its own class, keyed by the protobuf message name its own schemas declare.
   class Widget {
-    constructor(input: { bytes: Uint8Array }) {
-      this.bytes = input.bytes;
+    constructor(readonly bytes: Uint8Array) {}
+
+    static fromBytes(bytes: Uint8Array): Widget {
+      return new Widget(bytes);
     }
-    readonly bytes: Uint8Array;
   }
 
   it("routes a third-party type through the shared entry points", () => {
@@ -122,7 +113,7 @@ describe("registry", () => {
       AnyDataSchema,
       create(AnyDataSchema, { data: { case: "intValue", value: 7n } }),
     );
-    const widget = new Widget({ bytes: payload });
+    const widget = new Widget(payload);
 
     const encoded = serializeAny(widget);
     expect(encoded.data.case).toBe("message");

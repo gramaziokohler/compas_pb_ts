@@ -4,10 +4,8 @@ import { create, toBinary } from "@bufbuild/protobuf";
 import { ValueSchema } from "@bufbuild/protobuf/wkt";
 
 import {
-  CompasDataStructures,
   COMPAS_PB_VERSION,
   CompasMessages,
-  CompasGeometry,
   Graph,
   Mesh,
   Polyline,
@@ -19,11 +17,9 @@ import {
 describe("compas_pb v1 wire format", () => {
   it("materializes flattened geometry coordinates through wrapper APIs", () => {
     const polyline = new Polyline({
-      data: create(CompasGeometry.PolylineDataSchema, {
-        guid: "polyline-guid",
-        name: "Polyline",
-        points: [0, 0, 0, 1.25, 2.5, 3.75],
-      }),
+      guid: "polyline-guid",
+      name: "Polyline",
+      points: [0, 0, 0, 1.25, 2.5, 3.75],
     });
 
     const loaded = pbLoadBytes(pbDumpBytes(polyline));
@@ -37,13 +33,11 @@ describe("compas_pb v1 wire format", () => {
 
   it("materializes mesh CSR faces through the existing wrapper API", () => {
     const mesh = new Mesh({
-      data: create(CompasDataStructures.MeshDataSchema, {
-        guid: "mesh-guid",
-        name: "Mesh",
-        vertices: [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0],
-        faceVertices: [0, 1, 2, 3],
-        faceSizes: [4],
-      }),
+      guid: "mesh-guid",
+      name: "Mesh",
+      vertices: [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0],
+      faceVertices: [0, 1, 2, 3],
+      faceSizes: [4],
     });
 
     const loaded = pbLoadBytes(pbDumpBytes(mesh));
@@ -61,32 +55,28 @@ describe("compas_pb v1 wire format", () => {
   it("loads matrix rotations and graphs", () => {
     const matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
     const rotation = new Rotation({
-      data: create(CompasGeometry.RotationDataSchema, {
-        guid: "rotation-guid",
-        name: "Rotation",
-        matrix,
-      }),
+      guid: "rotation-guid",
+      name: "Rotation",
+      matrix,
     });
     const graph = new Graph({
-      data: create(CompasDataStructures.GraphDataSchema, {
-        guid: "graph-guid",
-        name: "Graph",
-        nodeKeys: [
-          create(CompasMessages.AnyDataSchema, {
-            data: { case: "intValue", value: 7n },
-          }),
-          create(CompasMessages.AnyDataSchema, {
-            data: {
-              case: "value",
-              value: create(ValueSchema, {
-                kind: { case: "stringValue", value: "node-b" },
-              }),
-            },
-          }),
-        ],
-        edgeU: [0],
-        edgeV: [1],
-      }),
+      guid: "graph-guid",
+      name: "Graph",
+      nodeKeys: [
+        create(CompasMessages.AnyDataSchema, {
+          data: { case: "intValue", value: 7n },
+        }),
+        create(CompasMessages.AnyDataSchema, {
+          data: {
+            case: "value",
+            value: create(ValueSchema, {
+              kind: { case: "stringValue", value: "node-b" },
+            }),
+          },
+        }),
+      ],
+      edgeU: [0],
+      edgeV: [1],
     });
 
     const loadedRotation = pbLoadBytes(pbDumpBytes(rotation));

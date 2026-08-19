@@ -1,20 +1,19 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { LineData } from "../proto/compas_pb/generated/geometry_pb";
 import { LineDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Point } from "./point";
+
+/** The fields a Line is built from. */
+export type LineInit = MessageInitShape<typeof LineDataSchema>;
 
 export class Line {
   public readonly data: LineData;
   private _start?: Point;
   private _end?: Point;
 
-  constructor(input: { bytes: Uint8Array } | { data: LineData }) {
-    let lineData: LineData;
-    if ("bytes" in input) {
-      lineData = bytesToLineData(input.bytes);
-    } else {
-      lineData = input.data;
-    }
+  constructor(init: LineInit) {
+    const lineData = create(LineDataSchema, init);
 
     if (!lineData.start || !lineData.end) {
       throw new Error(
@@ -25,7 +24,12 @@ export class Line {
   }
 
   get bytes(): Uint8Array {
-    return lineDataToBytes(this.data);
+    return lineToBytes(this);
+  }
+
+  /** Reads a Line from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Line {
+    return bytesToLine(bytes);
   }
   get guid(): string {
     return this.data.guid;
@@ -37,23 +41,23 @@ export class Line {
 
   get start(): Point {
     if (!this._start) {
-      this._start = new Point({ data: this.data.start! });
+      this._start = new Point(this.data.start!);
     }
     return this._start;
   }
 
   get end(): Point {
     if (!this._end) {
-      this._end = new Point({ data: this.data.end! });
+      this._end = new Point(this.data.end!);
     }
     return this._end;
   }
 }
 
-export function bytesToLineData(bytes: Uint8Array): LineData {
-  return fromBinary(LineDataSchema, bytes);
+export function bytesToLine(bytes: Uint8Array): Line {
+  return new Line(fromBinary(LineDataSchema, bytes));
 }
 
-export function lineDataToBytes(line: LineData): Uint8Array {
-  return toBinary(LineDataSchema, line);
+export function lineToBytes(line: Line): Uint8Array {
+  return toBinary(LineDataSchema, line.data);
 }

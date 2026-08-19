@@ -1,18 +1,17 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { CapsuleData } from "../proto/compas_pb/generated/geometry_pb";
 import { CapsuleDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+/** The fields a Capsule is built from. */
+export type CapsuleInit = MessageInitShape<typeof CapsuleDataSchema>;
+
 export class Capsule {
   public readonly data: CapsuleData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: CapsuleData }) {
-    let capsuleData: CapsuleData;
-    if ("bytes" in input) {
-      capsuleData = bytesToCapsuleData(input.bytes);
-    } else {
-      capsuleData = input.data;
-    }
+  constructor(init: CapsuleInit) {
+    const capsuleData = create(CapsuleDataSchema, init);
 
     if (!capsuleData.radius || !capsuleData.height || !capsuleData.frame) {
       throw new Error(
@@ -23,7 +22,12 @@ export class Capsule {
   }
 
   get bytes(): Uint8Array {
-    return capsuleDataToBytes(this.data);
+    return capsuleToBytes(this);
+  }
+
+  /** Reads a Capsule from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Capsule {
+    return bytesToCapsule(bytes);
   }
 
   get guid(): string {
@@ -44,16 +48,16 @@ export class Capsule {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToCapsuleData(bytes: Uint8Array): CapsuleData {
-  return fromBinary(CapsuleDataSchema, bytes);
+export function bytesToCapsule(bytes: Uint8Array): Capsule {
+  return new Capsule(fromBinary(CapsuleDataSchema, bytes));
 }
 
-export function capsuleDataToBytes(data: CapsuleData): Uint8Array {
-  return toBinary(CapsuleDataSchema, data);
+export function capsuleToBytes(capsule: Capsule): Uint8Array {
+  return toBinary(CapsuleDataSchema, capsule.data);
 }

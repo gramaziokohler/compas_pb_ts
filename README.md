@@ -14,53 +14,42 @@ npm install @gramaziokohler/compas-pb-ts
 
 ## Usage
 
-Messages are built with `create` and a generated schema. The schema is what carries
-the field numbers, so it is the first argument to everything at runtime:
+Build a wrapper from plain fields and hand it straight to the codec. Descriptors and
+generated message types stay out of the way:
 
 ```ts
-import { create } from "@bufbuild/protobuf";
-import { CompasGeometry, Point, bytesToPointData, pointDataToBytes } from "@gramaziokohler/compas-pb-ts";
+import { Point, bytesToPoint, pointToBytes } from "@gramaziokohler/compas-pb-ts";
 
-const point = new Point({
-  data: create(CompasGeometry.PointDataSchema, {
-    guid: "point-guid",
-    name: "Point",
-    x: 1,
-    y: 2,
-    z: 3,
-  }),
-});
+const point = new Point({ name: "Point", x: 1, y: 2, z: 3 });
 
-const bytes = pointDataToBytes(point.data);
-const decoded = bytesToPointData(bytes);
+const bytes = pointToBytes(point);
+const decoded = bytesToPoint(bytes);
+
+decoded.x; // 1
 ```
 
-Nested messages can stay plain objects inside `create`:
+Nested geometry is plain objects too:
 
 ```ts
-import { create } from "@bufbuild/protobuf";
-import { Box, CompasGeometry, pbDumpBytes, pbLoadBytes } from "@gramaziokohler/compas-pb-ts";
+import { Box, boxToBytes } from "@gramaziokohler/compas-pb-ts";
 
 const box = new Box({
-  data: create(CompasGeometry.BoxDataSchema, {
-    guid: crypto.randomUUID(),
-    name: "Box",
-    frame: {
-      point: { x: 0, y: 0, z: 0 },
-      xaxis: { x: 1, y: 0, z: 0 },
-      yaxis: { x: 0, y: 1, z: 0 },
-    },
-    xsize: 1,
-    ysize: 1,
-    zsize: 1,
-  }),
+  name: "Box",
+  frame: {
+    point: { x: 0, y: 0, z: 0 },
+    xaxis: { x: 1, y: 0, z: 0 },
+    yaxis: { x: 0, y: 1, z: 0 },
+  },
+  xsize: 1,
+  ysize: 1,
+  zsize: 1,
 });
 
-const restored = pbLoadBytes(pbDumpBytes(box));
+const bytes = boxToBytes(box);
+box.frame.point.x; // reading gives you wrappers back
 ```
 
-Geometry and datastructure messages load back as their wrapper classes. `ListData` and
-`DictData` load recursively as plain JavaScript arrays and objects.
+Every wrapper has `bytesToX` / `xToBytes`, a `bytes` getter and a static `fromBytes`.
 
 ### Envelopes
 
@@ -95,20 +84,20 @@ registerType("example.v1.WidgetData", Widget, {
 });
 ```
 
-Omit the codec if your class follows the wrapper convention: a `bytes` getter and a
-`{ bytes }` constructor. See `@gramaziokohler/antikythera-ts` for a full plugin.
+Omit the codec if your class follows the wrapper convention: a `bytes` getter and a static
+`fromBytes`. See `@gramaziokohler/antikythera-ts` for a full plugin.
 
 ### Generated types
 
-Generated messages are available as namespaced root exports. Each message is a **type**
-(erased at compile time) plus a **schema** (the runtime descriptor):
+You do not need these for normal use -- the wrappers above cover it. They are here for
+interoperating with protobuf directly. Each message is a **type** (erased at compile time)
+plus a **schema** (the runtime descriptor):
 
 ```ts
 import { create } from "@bufbuild/protobuf";
 import { CompasGeometry } from "@gramaziokohler/compas-pb-ts";
 
 const data: CompasGeometry.PointData = create(CompasGeometry.PointDataSchema, {
-  guid: "point-guid",
   name: "Point",
   x: 1,
   y: 2,

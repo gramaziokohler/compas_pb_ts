@@ -1,17 +1,16 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { ShearData } from "../proto/compas_pb/generated/geometry_pb";
 import { ShearDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Shear is built from. */
+export type ShearInit = MessageInitShape<typeof ShearDataSchema>;
 
 export class Shear {
   public readonly data: ShearData;
 
-  constructor(input: { bytes: Uint8Array } | { data: ShearData }) {
-    let shearData: ShearData;
-    if ("bytes" in input) {
-      shearData = bytesToShearData(input.bytes);
-    } else {
-      shearData = input.data;
-    }
+  constructor(init: ShearInit) {
+    const shearData = create(ShearDataSchema, init);
 
     if (!shearData.matrix) {
       throw new Error(
@@ -22,7 +21,12 @@ export class Shear {
   }
 
   get bytes(): Uint8Array {
-    return shearDataToBytes(this.data);
+    return shearToBytes(this);
+  }
+
+  /** Reads a Shear from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Shear {
+    return bytesToShear(bytes);
   }
 
   get guid(): string {
@@ -38,10 +42,10 @@ export class Shear {
   }
 }
 
-export function bytesToShearData(bytes: Uint8Array): ShearData {
-  return fromBinary(ShearDataSchema, bytes);
+export function bytesToShear(bytes: Uint8Array): Shear {
+  return new Shear(fromBinary(ShearDataSchema, bytes));
 }
 
-export function shearDataToBytes(data: ShearData): Uint8Array {
-  return toBinary(ShearDataSchema, data);
+export function shearToBytes(shear: Shear): Uint8Array {
+  return toBinary(ShearDataSchema, shear.data);
 }

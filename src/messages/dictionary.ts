@@ -21,6 +21,11 @@ export class Dictionary {
     return dictDataToBytes(this.data);
   }
 
+  /** Reads a Dictionary from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Dictionary {
+    return new Dictionary({ bytes });
+  }
+
   get asDict(): { [key: string]: any } {
     return resolveDictData(this.data);
   }

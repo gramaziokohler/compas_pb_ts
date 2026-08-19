@@ -1,19 +1,18 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { TorusData } from "../proto/compas_pb/generated/geometry_pb";
 import { TorusDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Torus is built from. */
+export type TorusInit = MessageInitShape<typeof TorusDataSchema>;
 
 export class Torus {
   public readonly data: TorusData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: TorusData }) {
-    let torusData: TorusData;
-    if ("bytes" in input) {
-      torusData = bytesToTorusData(input.bytes);
-    } else {
-      torusData = input.data;
-    }
+  constructor(init: TorusInit) {
+    const torusData = create(TorusDataSchema, init);
 
     if (!torusData.radiusAxis || !torusData.radiusPipe || !torusData.frame) {
       throw new Error(
@@ -24,7 +23,12 @@ export class Torus {
   }
 
   get bytes(): Uint8Array {
-    return torusDataToBytes(this.data);
+    return torusToBytes(this);
+  }
+
+  /** Reads a Torus from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Torus {
+    return bytesToTorus(bytes);
   }
 
   get guid(): string {
@@ -45,16 +49,16 @@ export class Torus {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToTorusData(bytes: Uint8Array): TorusData {
-  return fromBinary(TorusDataSchema, bytes);
+export function bytesToTorus(bytes: Uint8Array): Torus {
+  return new Torus(fromBinary(TorusDataSchema, bytes));
 }
 
-export function torusDataToBytes(data: TorusData): Uint8Array {
-  return toBinary(TorusDataSchema, data);
+export function torusToBytes(torus: Torus): Uint8Array {
+  return toBinary(TorusDataSchema, torus.data);
 }

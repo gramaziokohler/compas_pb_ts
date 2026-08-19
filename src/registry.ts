@@ -30,7 +30,7 @@ export interface ProtobufObject {
  * Python stores functions in its registry (`@pb_serializer` / `@pb_deserializer`) rather
  * than requiring a class shape, which lets a domain model stay free of protobuf concerns.
  * Supplying a codec here does the same. Omit it and the wrapper convention is assumed --
- * a `bytes` getter and a `{ bytes }` constructor, which is how compas_pb's own types work.
+ * a `bytes` getter and a static `fromBytes`, which is how compas_pb's own types work.
  */
 export interface Codec<T = any> {
   toBytes(value: T): Uint8Array;
@@ -56,7 +56,7 @@ const byFullName = new Map<string, Registration>();
  * @param constructor The class instances of this type are, used to recognise values on
  *   the way out and to key the prototype-chain lookup.
  * @param codec How to convert to and from the message bytes. Omit it for the wrapper
- *   convention: a `bytes` getter and a `{ bytes }` constructor.
+ *   convention: a `bytes` getter and a static `fromBytes`.
  */
 export function registerType<T>(
   fullName: string,
@@ -71,7 +71,10 @@ export function registerType<T>(
       : (value: ProtobufObject) => value.bytes,
     fromBytes: codec
       ? (bytes: Uint8Array) => codec.fromBytes(bytes)
-      : (bytes: Uint8Array) => new constructor({ bytes }),
+      : (bytes: Uint8Array) =>
+          (
+            constructor as unknown as { fromBytes(bytes: Uint8Array): T }
+          ).fromBytes(bytes),
   };
   byConstructor.set(constructor, registration);
   byFullName.set(fullName, registration);

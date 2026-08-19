@@ -1,17 +1,16 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { ProjectionData } from "../proto/compas_pb/generated/geometry_pb";
 import { ProjectionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Projection is built from. */
+export type ProjectionInit = MessageInitShape<typeof ProjectionDataSchema>;
 
 export class Projection {
   public readonly data: ProjectionData;
 
-  constructor(input: { bytes: Uint8Array } | { data: ProjectionData }) {
-    let projectionData: ProjectionData;
-    if ("bytes" in input) {
-      projectionData = bytesToProjectionData(input.bytes);
-    } else {
-      projectionData = input.data;
-    }
+  constructor(init: ProjectionInit) {
+    const projectionData = create(ProjectionDataSchema, init);
 
     if (!projectionData.matrix) {
       throw new Error(
@@ -22,7 +21,12 @@ export class Projection {
   }
 
   get bytes(): Uint8Array {
-    return projectionDataToBytes(this.data);
+    return projectionToBytes(this);
+  }
+
+  /** Reads a Projection from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Projection {
+    return bytesToProjection(bytes);
   }
 
   get guid(): string {
@@ -38,10 +42,10 @@ export class Projection {
   }
 }
 
-export function bytesToProjectionData(bytes: Uint8Array): ProjectionData {
-  return fromBinary(ProjectionDataSchema, bytes);
+export function bytesToProjection(bytes: Uint8Array): Projection {
+  return new Projection(fromBinary(ProjectionDataSchema, bytes));
 }
 
-export function projectionDataToBytes(data: ProjectionData): Uint8Array {
-  return toBinary(ProjectionDataSchema, data);
+export function projectionToBytes(projection: Projection): Uint8Array {
+  return toBinary(ProjectionDataSchema, projection.data);
 }

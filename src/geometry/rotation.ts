@@ -1,17 +1,16 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { RotationData } from "../proto/compas_pb/generated/geometry_pb";
 import { RotationDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Rotation is built from. */
+export type RotationInit = MessageInitShape<typeof RotationDataSchema>;
 
 export class Rotation {
   public readonly data: RotationData;
 
-  constructor(input: { bytes: Uint8Array } | { data: RotationData }) {
-    let rotationData: RotationData;
-    if ("bytes" in input) {
-      rotationData = bytesToRotationData(input.bytes);
-    } else {
-      rotationData = input.data;
-    }
+  constructor(init: RotationInit) {
+    const rotationData = create(RotationDataSchema, init);
 
     if (rotationData.matrix.length !== 16) {
       throw new Error("Invalid RotationData: matrix must contain 16 values.");
@@ -20,7 +19,12 @@ export class Rotation {
   }
 
   get bytes(): Uint8Array {
-    return rotationDataToBytes(this.data);
+    return rotationToBytes(this);
+  }
+
+  /** Reads a Rotation from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Rotation {
+    return bytesToRotation(bytes);
   }
 
   get guid(): string {
@@ -36,10 +40,10 @@ export class Rotation {
   }
 }
 
-export function bytesToRotationData(bytes: Uint8Array): RotationData {
-  return fromBinary(RotationDataSchema, bytes);
+export function bytesToRotation(bytes: Uint8Array): Rotation {
+  return new Rotation(fromBinary(RotationDataSchema, bytes));
 }
 
-export function rotationDataToBytes(data: RotationData): Uint8Array {
-  return toBinary(RotationDataSchema, data);
+export function rotationToBytes(rotation: Rotation): Uint8Array {
+  return toBinary(RotationDataSchema, rotation.data);
 }

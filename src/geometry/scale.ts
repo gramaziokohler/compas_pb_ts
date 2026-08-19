@@ -1,17 +1,16 @@
-import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { ScaleData } from "../proto/compas_pb/generated/geometry_pb";
 import { ScaleDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Scale is built from. */
+export type ScaleInit = MessageInitShape<typeof ScaleDataSchema>;
 
 export class Scale {
   public readonly data: ScaleData;
 
-  constructor(input: { bytes: Uint8Array } | { data: ScaleData }) {
-    let scaleData: ScaleData;
-    if ("bytes" in input) {
-      scaleData = bytesToScaleData(input.bytes);
-    } else {
-      scaleData = input.data;
-    }
+  constructor(init: ScaleInit) {
+    const scaleData = create(ScaleDataSchema, init);
 
     if (!scaleData.matrix) {
       throw new Error(
@@ -22,7 +21,12 @@ export class Scale {
   }
 
   get bytes(): Uint8Array {
-    return scaleDataToBytes(this.data);
+    return scaleToBytes(this);
+  }
+
+  /** Reads a Scale from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Scale {
+    return bytesToScale(bytes);
   }
 
   get guid(): string {
@@ -38,10 +42,10 @@ export class Scale {
   }
 }
 
-export function bytesToScaleData(bytes: Uint8Array): ScaleData {
-  return fromBinary(ScaleDataSchema, bytes);
+export function bytesToScale(bytes: Uint8Array): Scale {
+  return new Scale(fromBinary(ScaleDataSchema, bytes));
 }
 
-export function scaleDataToBytes(data: ScaleData): Uint8Array {
-  return toBinary(ScaleDataSchema, data);
+export function scaleToBytes(scale: Scale): Uint8Array {
+  return toBinary(ScaleDataSchema, scale.data);
 }

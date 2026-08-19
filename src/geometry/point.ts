@@ -1,17 +1,16 @@
+import type { MessageInitShape } from "@bufbuild/protobuf";
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import type { PointData } from "../proto/compas_pb/generated/geometry_pb";
 import { PointDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
+/** The fields a Point is built from. */
+export type PointInit = MessageInitShape<typeof PointDataSchema>;
+
 export class Point {
   public readonly data: PointData;
 
-  constructor(input: { bytes: Uint8Array } | { data: PointData }) {
-    let pointData: PointData;
-    if ("bytes" in input) {
-      pointData = bytesToPointData(input.bytes);
-    } else {
-      pointData = input.data;
-    }
+  constructor(init: PointInit) {
+    const pointData = create(PointDataSchema, init);
 
     if (
       pointData.x === undefined ||
@@ -26,7 +25,12 @@ export class Point {
   }
 
   get bytes(): Uint8Array {
-    return pointDataToBytes(this.data);
+    return pointToBytes(this);
+  }
+
+  /** Reads a Point from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Point {
+    return bytesToPoint(bytes);
   }
 
   get guid(): string {
@@ -50,12 +54,12 @@ export class Point {
   }
 }
 
-export function bytesToPointData(bytes: Uint8Array): PointData {
-  return fromBinary(PointDataSchema, bytes);
+export function bytesToPoint(bytes: Uint8Array): Point {
+  return new Point(fromBinary(PointDataSchema, bytes));
 }
 
-export function pointDataToBytes(point: PointData): Uint8Array {
-  return toBinary(PointDataSchema, point);
+export function pointToBytes(point: Point): Uint8Array {
+  return toBinary(PointDataSchema, point.data);
 }
 
 export function pointsFromFlatCoordinates(coordinates: number[]): Point[] {
@@ -67,13 +71,11 @@ export function pointsFromFlatCoordinates(coordinates: number[]): Point[] {
   for (let index = 0; index < coordinates.length; index += 3) {
     points.push(
       new Point({
-        data: create(PointDataSchema, {
-          guid: "",
-          name: "",
-          x: coordinates[index],
-          y: coordinates[index + 1],
-          z: coordinates[index + 2],
-        }),
+        guid: "",
+        name: "",
+        x: coordinates[index],
+        y: coordinates[index + 1],
+        z: coordinates[index + 2],
       }),
     );
   }
