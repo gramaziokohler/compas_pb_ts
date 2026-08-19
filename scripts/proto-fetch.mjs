@@ -5,18 +5,15 @@
 // them as release assets; consumers pin a version and download it. See the architecture
 // page in the compas_pb docs.
 
-import { execFileSync } from "node:child_process";
 import {
-  mkdtempSync,
   mkdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
-  cpSync,
   existsSync,
 } from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
+import { unzipSync } from "fflate";
 import { fileURLToPath } from "node:url";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -28,30 +25,42 @@ const outputRoot = path.join(projectRoot, "src", "proto");
 const args = parseArguments(process.argv.slice(2));
 const assetName = `compas_pb-generated-typescript-${manifest.generatorVersion}.zip`;
 
-const staging = mkdtempSync(path.join(tmpdir(), "compas-pb-bindings-"));
-try {
-  const archive = args.fromLocal
-    ? localArchive(args.fromLocal)
-    : await downloadArchive();
+const archive = args.fromLocal
+  ? readFileSync(localArchive(args.fromLocal))
+  : await downloadArchive();
 
-  // tar reads zip on macOS, Linux and Windows 10+, so this needs no unzip dependency.
-  execFileSync("tar", ["-xf", archive, "-C", staging], { stdio: "inherit" });
+rmSync(outputRoot, { recursive: true, force: true });
+mkdirSync(outputRoot, { recursive: true });
+extractInto(archive, outputRoot);
 
-  rmSync(outputRoot, { recursive: true, force: true });
-  mkdirSync(outputRoot, { recursive: true });
-  cpSync(staging, outputRoot, { recursive: true });
+writeFileSync(
+  path.join(outputRoot, "version.ts"),
+  `// Written by scripts/proto-fetch.mjs from the pinned compas_pb release.\n` +
+    `export const COMPAS_PB_VERSION = ${JSON.stringify(manifest.wireVersion)};\n`,
+);
 
-  writeFileSync(
-    path.join(outputRoot, "version.ts"),
-    `// Written by scripts/proto-fetch.mjs from the pinned compas_pb release.\n` +
-      `export const COMPAS_PB_VERSION = ${JSON.stringify(manifest.wireVersion)};\n`,
-  );
+console.log(
+  `Fetched ${assetName} from compas_pb ${manifest.ref} (wire ${manifest.wireVersion}).`,
+);
 
-  console.log(
-    `Fetched ${assetName} from compas_pb ${manifest.ref} (wire ${manifest.wireVersion}).`,
-  );
-} finally {
-  rmSync(staging, { recursive: true, force: true });
+/**
+ * Unpacks the archive in-process.
+ *
+ * Shelling out is not portable here: the assets are zips, and GNU tar -- which is what
+ * Linux ships -- cannot read them, while `unzip` is missing from slim images.
+ */
+function extractInto(zipped, destination) {
+  for (const [name, contents] of Object.entries(unzipSync(zipped))) {
+    if (name.endsWith("/")) {
+      continue;
+    }
+    const target = path.join(destination, name);
+    if (!path.resolve(target).startsWith(path.resolve(destination))) {
+      throw new Error(`Refusing to extract outside the output folder: ${name}`);
+    }
+    mkdirSync(path.dirname(target), { recursive: true });
+    writeFileSync(target, contents);
+  }
 }
 
 function localArchive(localPath) {
@@ -86,9 +95,7 @@ async function downloadArchive() {
     );
   }
 
-  const archive = path.join(staging, assetName);
-  writeFileSync(archive, Buffer.from(await response.arrayBuffer()));
-  return archive;
+  return new Uint8Array(await response.arrayBuffer());
 }
 
 function parseArguments(argv) {
