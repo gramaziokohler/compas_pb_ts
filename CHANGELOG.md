@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v2.0.0...compas-pb-ts-v3.0.0) (2026-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* wrapper constructors take field values rather than `{ data }` or `{ bytes }`; use `X.fromBytes` or `bytesToX` for bytes. `bytesToXData` and `xDataToBytes` are renamed and now take and return wrappers.
+* generated types are protobuf-es. `X.encode(v).finish()` and `X.decode(b)` become `toBinary(XSchema, v)` and `fromBinary(XSchema, b)`, message literals must be built with `create(XSchema, {...})`, and AnyData oneofs use `{ data: { case, value } }`. google.protobuf types now come from @bufbuild/protobuf/wkt instead of being generated.
+
+### Features
+
+* add a type registry and the recursive serializer ([d995217](https://github.com/gramaziokohler/compas_pb_ts/commit/d995217a703995087e7646a489a6739be68f9456))
+* consume generated bindings and move to protobuf-es ([064e8ed](https://github.com/gramaziokohler/compas_pb_ts/commit/064e8edcf1f62fdeca310fd02bb79594ea1fed4c))
+* forward an already-encoded AnyData unchanged ([5231e47](https://github.com/gramaziokohler/compas_pb_ts/commit/5231e47826123588516cd6558cea688ccd9585f9))
+* hide the generated types behind the wrappers ([2a76524](https://github.com/gramaziokohler/compas_pb_ts/commit/2a76524e868112e70f1eee75e89f20908992b406))
+* let registered types supply their own codec functions ([a196bae](https://github.com/gramaziokohler/compas_pb_ts/commit/a196bae527ecd07612d3323bbe5b0fdd3fb9f48a))
+* ship the bindings fetcher as a reusable bin ([88eea7b](https://github.com/gramaziokohler/compas_pb_ts/commit/88eea7b786889b6dd4a6aeee834a304cbeeaa480))
+* ship the generated protobuf modules as subpath exports ([a115109](https://github.com/gramaziokohler/compas_pb_ts/commit/a1151093757ff426a9be6483c8e53af8d17df4a8))
+
+
+### Bug Fixes
+
+* unpack the bindings archive in Node ([dd51ab5](https://github.com/gramaziokohler/compas_pb_ts/commit/dd51ab52030ed08d1493fde8d6c10f955cbd718e))
+
 ## [2.0.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v1.4.1...compas-pb-ts-v2.0.0) (2026-08-06)
 
 
