@@ -1,16 +1,17 @@
-import { ConeData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ConeData } from "../proto/compas_pb/generated/geometry_pb";
+import { ConeDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+/** The fields a Cone is built from. */
+export type ConeInit = MessageInitShape<typeof ConeDataSchema>;
+
 export class Cone {
   public readonly data: ConeData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: ConeData }) {
-    let coneData: ConeData;
-    if ("bytes" in input) {
-      coneData = bytesToConeData(input.bytes);
-    } else {
-      coneData = input.data;
-    }
+  constructor(init: ConeInit) {
+    const coneData = create(ConeDataSchema, init);
 
     if (!coneData.radius || !coneData.height || !coneData.frame) {
       throw new Error(
@@ -21,7 +22,12 @@ export class Cone {
   }
 
   get bytes(): Uint8Array {
-    return coneDataToBytes(this.data);
+    return coneToBytes(this);
+  }
+
+  /** Reads a Cone from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Cone {
+    return bytesToCone(bytes);
   }
 
   get guid(): string {
@@ -42,16 +48,16 @@ export class Cone {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToConeData(bytes: Uint8Array): ConeData {
-  return ConeData.decode(bytes);
+export function bytesToCone(bytes: Uint8Array): Cone {
+  return new Cone(fromBinary(ConeDataSchema, bytes));
 }
 
-export function coneDataToBytes(data: ConeData): Uint8Array {
-  return ConeData.encode(data).finish();
+export function coneToBytes(cone: Cone): Uint8Array {
+  return toBinary(ConeDataSchema, cone.data);
 }

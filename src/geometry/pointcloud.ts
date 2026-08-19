@@ -1,17 +1,18 @@
-import { PointcloudData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PointcloudData } from "../proto/compas_pb/generated/geometry_pb";
+import { PointcloudDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
+
+/** The fields a Pointcloud is built from. */
+export type PointcloudInit = MessageInitShape<typeof PointcloudDataSchema>;
 
 export class Pointcloud {
   public readonly data: PointcloudData;
   private _points?: Point[];
 
-  constructor(input: { bytes: Uint8Array } | { data: PointcloudData }) {
-    let pointcloudData: PointcloudData;
-    if ("bytes" in input) {
-      pointcloudData = bytesToPointCloudData(input.bytes);
-    } else {
-      pointcloudData = input.data;
-    }
+  constructor(init: PointcloudInit) {
+    const pointcloudData = create(PointcloudDataSchema, init);
 
     if (!pointcloudData.points || pointcloudData.points.length === 0) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Pointcloud {
   }
 
   get bytes(): Uint8Array {
-    return pointCloudDataToBytes(this.data);
+    return pointCloudToBytes(this);
+  }
+
+  /** Reads a Pointcloud from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Pointcloud {
+    return bytesToPointcloud(bytes);
   }
 
   get guid(): string {
@@ -41,10 +47,10 @@ export class Pointcloud {
   }
 }
 
-export function bytesToPointCloudData(bytes: Uint8Array): PointcloudData {
-  return PointcloudData.decode(bytes);
+export function bytesToPointcloud(bytes: Uint8Array): Pointcloud {
+  return new Pointcloud(fromBinary(PointcloudDataSchema, bytes));
 }
 
-export function pointCloudDataToBytes(data: PointcloudData): Uint8Array {
-  return PointcloudData.encode(data).finish();
+export function pointCloudToBytes(pointCloud: Pointcloud): Uint8Array {
+  return toBinary(PointcloudDataSchema, pointCloud.data);
 }

@@ -1,17 +1,18 @@
-import { HyperbolaData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { HyperbolaData } from "../proto/compas_pb/generated/geometry_pb";
+import { HyperbolaDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Hyperbola is built from. */
+export type HyperbolaInit = MessageInitShape<typeof HyperbolaDataSchema>;
 
 export class Hyperbola {
   public readonly data: HyperbolaData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: HyperbolaData }) {
-    let hyperbolaData: HyperbolaData;
-    if ("bytes" in input) {
-      hyperbolaData = bytesToHyperbolaData(input.bytes);
-    } else {
-      hyperbolaData = input.data;
-    }
+  constructor(init: HyperbolaInit) {
+    const hyperbolaData = create(HyperbolaDataSchema, init);
 
     if (!hyperbolaData.major || !hyperbolaData.minor || !hyperbolaData.frame) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Hyperbola {
   }
 
   get bytes(): Uint8Array {
-    return hyperbolaDataToBytes(this.data);
+    return hyperbolaToBytes(this);
+  }
+
+  /** Reads a Hyperbola from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Hyperbola {
+    return bytesToHyperbola(bytes);
   }
 
   get guid(): string {
@@ -43,16 +49,16 @@ export class Hyperbola {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToHyperbolaData(bytes: Uint8Array): HyperbolaData {
-  return HyperbolaData.decode(bytes);
+export function bytesToHyperbola(bytes: Uint8Array): Hyperbola {
+  return new Hyperbola(fromBinary(HyperbolaDataSchema, bytes));
 }
 
-export function hyperbolaDataToBytes(data: HyperbolaData): Uint8Array {
-  return HyperbolaData.encode(data).finish();
+export function hyperbolaToBytes(hyperbola: Hyperbola): Uint8Array {
+  return toBinary(HyperbolaDataSchema, hyperbola.data);
 }

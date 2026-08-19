@@ -1,14 +1,15 @@
-import { VectorData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { VectorData } from "../proto/compas_pb/generated/geometry_pb";
+import { VectorDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+/** The fields a Vector is built from. */
+export type VectorInit = MessageInitShape<typeof VectorDataSchema>;
+
 export class Vector {
   public readonly data: VectorData;
 
-  constructor(input: { bytes: Uint8Array } | { data: VectorData }) {
-    let vectorData: VectorData;
-    if ("bytes" in input) {
-      vectorData = bytesToVectorData(input.bytes);
-    } else {
-      vectorData = input.data;
-    }
+  constructor(init: VectorInit) {
+    const vectorData = create(VectorDataSchema, init);
 
     if (
       vectorData.x === undefined ||
@@ -23,7 +24,12 @@ export class Vector {
   }
 
   get bytes(): Uint8Array {
-    return vectorDataToBytes(this.data);
+    return vectorToBytes(this);
+  }
+
+  /** Reads a Vector from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Vector {
+    return bytesToVector(bytes);
   }
 
   get guid(): string {
@@ -47,10 +53,10 @@ export class Vector {
   }
 }
 
-export function bytesToVectorData(bytes: Uint8Array): VectorData {
-  return VectorData.decode(bytes);
+export function bytesToVector(bytes: Uint8Array): Vector {
+  return new Vector(fromBinary(VectorDataSchema, bytes));
 }
 
-export function vectorDataToBytes(vector: VectorData): Uint8Array {
-  return VectorData.encode(vector).finish();
+export function vectorToBytes(vector: Vector): Uint8Array {
+  return toBinary(VectorDataSchema, vector.data);
 }

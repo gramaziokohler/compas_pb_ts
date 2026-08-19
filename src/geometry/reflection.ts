@@ -1,15 +1,16 @@
-import { ReflectionData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ReflectionData } from "../proto/compas_pb/generated/geometry_pb";
+import { ReflectionDataSchema } from "../proto/compas_pb/generated/geometry_pb";
+
+/** The fields a Reflection is built from. */
+export type ReflectionInit = MessageInitShape<typeof ReflectionDataSchema>;
 
 export class Reflection {
   public readonly data: ReflectionData;
 
-  constructor(input: { bytes: Uint8Array } | { data: ReflectionData }) {
-    let reflectionData: ReflectionData;
-    if ("bytes" in input) {
-      reflectionData = bytesToReflectionData(input.bytes);
-    } else {
-      reflectionData = input.data;
-    }
+  constructor(init: ReflectionInit) {
+    const reflectionData = create(ReflectionDataSchema, init);
 
     if (!reflectionData.matrix) {
       throw new Error(
@@ -20,7 +21,12 @@ export class Reflection {
   }
 
   get bytes(): Uint8Array {
-    return reflectionDataToBytes(this.data);
+    return reflectionToBytes(this);
+  }
+
+  /** Reads a Reflection from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Reflection {
+    return bytesToReflection(bytes);
   }
 
   get guid(): string {
@@ -36,10 +42,10 @@ export class Reflection {
   }
 }
 
-export function bytesToReflectionData(bytes: Uint8Array): ReflectionData {
-  return ReflectionData.decode(bytes);
+export function bytesToReflection(bytes: Uint8Array): Reflection {
+  return new Reflection(fromBinary(ReflectionDataSchema, bytes));
 }
 
-export function reflectionDataToBytes(data: ReflectionData): Uint8Array {
-  return ReflectionData.encode(data).finish();
+export function reflectionToBytes(reflection: Reflection): Uint8Array {
+  return toBinary(ReflectionDataSchema, reflection.data);
 }

@@ -1,17 +1,18 @@
-import { BezierData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { BezierData } from "../proto/compas_pb/generated/geometry_pb";
+import { BezierDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
+
+/** The fields a Bezier is built from. */
+export type BezierInit = MessageInitShape<typeof BezierDataSchema>;
 
 export class Bezier {
   public readonly data: BezierData;
   private _points?: Point[];
 
-  constructor(input: { bytes: Uint8Array } | { data: BezierData }) {
-    let bezierData: BezierData;
-    if ("bytes" in input) {
-      bezierData = bytesToBezierData(input.bytes);
-    } else {
-      bezierData = input.data;
-    }
+  constructor(init: BezierInit) {
+    const bezierData = create(BezierDataSchema, init);
 
     if (!bezierData.points || bezierData.points.length === 0) {
       throw new Error("Invalid BezierData: Missing required property points.");
@@ -20,7 +21,12 @@ export class Bezier {
   }
 
   get bytes(): Uint8Array {
-    return bezierDataToBytes(this.data);
+    return bezierToBytes(this);
+  }
+
+  /** Reads a Bezier from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Bezier {
+    return bytesToBezier(bytes);
   }
 
   get guid(): string {
@@ -38,10 +44,10 @@ export class Bezier {
     return this._points;
   }
 }
-export function bytesToBezierData(bytes: Uint8Array): BezierData {
-  return BezierData.decode(bytes);
+export function bytesToBezier(bytes: Uint8Array): Bezier {
+  return new Bezier(fromBinary(BezierDataSchema, bytes));
 }
 
-export function bezierDataToBytes(data: BezierData): Uint8Array {
-  return BezierData.encode(data).finish();
+export function bezierToBytes(bezier: Bezier): Uint8Array {
+  return toBinary(BezierDataSchema, bezier.data);
 }

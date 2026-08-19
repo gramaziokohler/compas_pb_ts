@@ -1,19 +1,20 @@
-import { PlaneData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PlaneData } from "../proto/compas_pb/generated/geometry_pb";
+import { PlaneDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Point } from "./point";
 import { Vector } from "./vector";
+
+/** The fields a Plane is built from. */
+export type PlaneInit = MessageInitShape<typeof PlaneDataSchema>;
 
 export class Plane {
   public readonly data: PlaneData;
   private _point?: Point;
   private _normal?: Vector;
 
-  constructor(input: { bytes: Uint8Array } | { data: PlaneData }) {
-    let planeData: PlaneData;
-    if ("bytes" in input) {
-      planeData = bytesToPlaneData(input.bytes);
-    } else {
-      planeData = input.data;
-    }
+  constructor(init: PlaneInit) {
+    const planeData = create(PlaneDataSchema, init);
 
     if (!planeData.point || !planeData.normal) {
       throw new Error(
@@ -25,7 +26,12 @@ export class Plane {
   }
 
   get bytes(): Uint8Array {
-    return planeDataToBytes(this.data);
+    return planeToBytes(this);
+  }
+
+  /** Reads a Plane from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Plane {
+    return bytesToPlane(bytes);
   }
 
   get guid(): string {
@@ -38,23 +44,23 @@ export class Plane {
 
   get point(): Point {
     if (!this._point) {
-      this._point = new Point({ data: this.data.point! });
+      this._point = new Point(this.data.point!);
     }
     return this._point;
   }
 
   get normal(): Vector {
     if (!this._normal) {
-      this._normal = new Vector({ data: this.data.normal! });
+      this._normal = new Vector(this.data.normal!);
     }
     return this._normal;
   }
 }
 
-export function bytesToPlaneData(bytes: Uint8Array): PlaneData {
-  return PlaneData.decode(bytes);
+export function bytesToPlane(bytes: Uint8Array): Plane {
+  return new Plane(fromBinary(PlaneDataSchema, bytes));
 }
 
-export function planeDataToBytes(plane: PlaneData): Uint8Array {
-  return PlaneData.encode(plane).finish();
+export function planeToBytes(plane: Plane): Uint8Array {
+  return toBinary(PlaneDataSchema, plane.data);
 }

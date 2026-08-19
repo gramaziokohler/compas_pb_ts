@@ -1,17 +1,18 @@
-import { BoxData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { BoxData } from "../proto/compas_pb/generated/geometry_pb";
+import { BoxDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Box is built from. */
+export type BoxInit = MessageInitShape<typeof BoxDataSchema>;
 
 export class Box {
   public readonly data: BoxData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: BoxData }) {
-    let boxData: BoxData;
-    if ("bytes" in input) {
-      boxData = bytesToBoxData(input.bytes);
-    } else {
-      boxData = input.data;
-    }
+  constructor(init: BoxInit) {
+    const boxData = create(BoxDataSchema, init);
 
     if (!boxData.xsize || !boxData.ysize || !boxData.zsize || !boxData.frame) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Box {
   }
 
   get bytes(): Uint8Array {
-    return boxDataToBytes(this.data);
+    return boxToBytes(this);
+  }
+
+  /** Reads a Box from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Box {
+    return bytesToBox(bytes);
   }
 
   get guid(): string {
@@ -47,16 +53,16 @@ export class Box {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToBoxData(bytes: Uint8Array): BoxData {
-  return BoxData.decode(bytes);
+export function bytesToBox(bytes: Uint8Array): Box {
+  return new Box(fromBinary(BoxDataSchema, bytes));
 }
 
-export function boxDataToBytes(box: BoxData): Uint8Array {
-  return BoxData.encode(box).finish();
+export function boxToBytes(box: Box): Uint8Array {
+  return toBinary(BoxDataSchema, box.data);
 }

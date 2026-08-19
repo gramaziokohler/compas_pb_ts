@@ -1,18 +1,19 @@
-import { MeshData } from "../generated/compas_pb/data/datastructures";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { MeshData } from "../proto/compas_pb/generated/datastructures_pb";
+import { MeshDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { MeshFaceList } from "./facelist";
+
+/** The fields a Mesh is built from. */
+export type MeshInit = MessageInitShape<typeof MeshDataSchema>;
 
 export class Mesh {
   public readonly data: MeshData;
   private _vertices?: Point[];
 
-  constructor(input: { bytes: Uint8Array } | { data: MeshData }) {
-    let meshData: MeshData;
-    if ("bytes" in input) {
-      meshData = bytesToMeshData(input.bytes);
-    } else {
-      meshData = input.data;
-    }
+  constructor(init: MeshInit) {
+    const meshData = create(MeshDataSchema, init);
 
     const faceVertexCount = meshData.faceSizes.reduce(
       (total, size) => total + size,
@@ -28,7 +29,12 @@ export class Mesh {
   }
 
   get bytes(): Uint8Array {
-    return meshDataToBytes(this.data);
+    return meshToBytes(this);
+  }
+
+  /** Reads a Mesh from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Mesh {
+    return bytesToMesh(bytes);
   }
 
   get guid(): string {
@@ -64,11 +70,10 @@ export class Mesh {
   }
 }
 
-export function bytesToMeshData(bytes: Uint8Array): MeshData {
-  const meshData = MeshData.decode(bytes);
-  return meshData;
+export function bytesToMesh(bytes: Uint8Array): Mesh {
+  return new Mesh(fromBinary(MeshDataSchema, bytes));
 }
 
-export function meshDataToBytes(mesh: MeshData): Uint8Array {
-  return MeshData.encode(mesh).finish();
+export function meshToBytes(mesh: Mesh): Uint8Array {
+  return toBinary(MeshDataSchema, mesh.data);
 }

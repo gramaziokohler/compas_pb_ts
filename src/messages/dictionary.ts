@@ -1,4 +1,6 @@
-import { DictData } from "../generated/compas_pb/data/message";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { DictData } from "../proto/compas_pb/generated/message_pb";
+import { DictDataSchema } from "../proto/compas_pb/generated/message_pb";
 import { resolveDictData } from "../analyzers/data";
 
 export class Dictionary {
@@ -19,14 +21,19 @@ export class Dictionary {
     return dictDataToBytes(this.data);
   }
 
+  /** Reads a Dictionary from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Dictionary {
+    return new Dictionary({ bytes });
+  }
+
   get asDict(): { [key: string]: any } {
     return resolveDictData(this.data);
   }
 }
 export function bytesToDictData(bytes: Uint8Array): DictData {
-  return DictData.decode(bytes);
+  return fromBinary(DictDataSchema, bytes);
 }
 
 export function dictDataToBytes(dict: DictData): Uint8Array {
-  return DictData.encode(dict).finish();
+  return toBinary(DictDataSchema, dict);
 }

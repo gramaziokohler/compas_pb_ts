@@ -1,4 +1,6 @@
-import { ListData } from "../generated/compas_pb/data/message";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ListData } from "../proto/compas_pb/generated/message_pb";
+import { ListDataSchema } from "../proto/compas_pb/generated/message_pb";
 import { resolveListData } from "../analyzers/data";
 
 export class List {
@@ -19,14 +21,19 @@ export class List {
     return listDataToBytes(this.data);
   }
 
+  /** Reads a List from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): List {
+    return new List({ bytes });
+  }
+
   get asList(): any[] {
     return resolveListData(this.data);
   }
 }
 export function bytesToListData(bytes: Uint8Array): ListData {
-  return ListData.decode(bytes);
+  return fromBinary(ListDataSchema, bytes);
 }
 
 export function listDataToBytes(list: ListData): Uint8Array {
-  return ListData.encode(list).finish();
+  return toBinary(ListDataSchema, list);
 }

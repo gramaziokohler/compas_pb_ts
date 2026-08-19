@@ -1,17 +1,18 @@
-import { SphereData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { SphereData } from "../proto/compas_pb/generated/geometry_pb";
+import { SphereDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Sphere is built from. */
+export type SphereInit = MessageInitShape<typeof SphereDataSchema>;
 
 export class Sphere {
   public readonly data: SphereData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: SphereData }) {
-    let sphereData: SphereData;
-    if ("bytes" in input) {
-      sphereData = bytesToSphereData(input.bytes);
-    } else {
-      sphereData = input.data;
-    }
+  constructor(init: SphereInit) {
+    const sphereData = create(SphereDataSchema, init);
 
     if (!sphereData.radius || !sphereData.frame) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Sphere {
   }
 
   get bytes(): Uint8Array {
-    return sphereDataToBytes(this.data);
+    return sphereToBytes(this);
+  }
+
+  /** Reads a Sphere from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Sphere {
+    return bytesToSphere(bytes);
   }
 
   get guid(): string {
@@ -39,16 +45,16 @@ export class Sphere {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToSphereData(bytes: Uint8Array): SphereData {
-  return SphereData.decode(bytes);
+export function bytesToSphere(bytes: Uint8Array): Sphere {
+  return new Sphere(fromBinary(SphereDataSchema, bytes));
 }
 
-export function sphereDataToBytes(data: SphereData): Uint8Array {
-  return SphereData.encode(data).finish();
+export function sphereToBytes(sphere: Sphere): Uint8Array {
+  return toBinary(SphereDataSchema, sphere.data);
 }

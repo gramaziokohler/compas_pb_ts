@@ -1,19 +1,20 @@
-import { PolyhedronData } from "../generated/compas_pb/data/datastructures";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PolyhedronData } from "../proto/compas_pb/generated/datastructures_pb";
+import { PolyhedronDataSchema } from "../proto/compas_pb/generated/datastructures_pb";
 import { type Point, pointsFromFlatCoordinates } from "../geometry/point";
 import { PolyhedronFace } from "./face";
+
+/** The fields a Polyhedron is built from. */
+export type PolyhedronInit = MessageInitShape<typeof PolyhedronDataSchema>;
 
 export class Polyhedron {
   public readonly data: PolyhedronData;
   private _points?: Point[];
   private _faces?: PolyhedronFace[];
 
-  constructor(input: { bytes: Uint8Array } | { data: PolyhedronData }) {
-    let polyhedronData: PolyhedronData;
-    if ("bytes" in input) {
-      polyhedronData = bytesToPolyhedronData(input.bytes);
-    } else {
-      polyhedronData = input.data;
-    }
+  constructor(init: PolyhedronInit) {
+    const polyhedronData = create(PolyhedronDataSchema, init);
 
     if (!polyhedronData.vertices || !polyhedronData.faces) {
       throw new Error(
@@ -24,7 +25,12 @@ export class Polyhedron {
   }
 
   get bytes(): Uint8Array {
-    return polyhedronDataToBytes(this.data);
+    return polyhedronToBytes(this);
+  }
+
+  /** Reads a Polyhedron from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Polyhedron {
+    return bytesToPolyhedron(bytes);
   }
 
   get guid(): string {
@@ -52,7 +58,7 @@ export class Polyhedron {
     if (!this._faces) {
       this._faces = [];
       for (const faceData of this.data.faces!) {
-        const face = new PolyhedronFace({ data: faceData });
+        const face = new PolyhedronFace(faceData);
         this._faces.push(face);
       }
     }
@@ -60,11 +66,10 @@ export class Polyhedron {
   }
 }
 
-export function bytesToPolyhedronData(bytes: Uint8Array): PolyhedronData {
-  const polyhedronData = PolyhedronData.decode(bytes);
-  return polyhedronData;
+export function bytesToPolyhedron(bytes: Uint8Array): Polyhedron {
+  return new Polyhedron(fromBinary(PolyhedronDataSchema, bytes));
 }
 
-export function polyhedronDataToBytes(polyhedron: PolyhedronData): Uint8Array {
-  return PolyhedronData.encode(polyhedron).finish();
+export function polyhedronToBytes(polyhedron: Polyhedron): Uint8Array {
+  return toBinary(PolyhedronDataSchema, polyhedron.data);
 }

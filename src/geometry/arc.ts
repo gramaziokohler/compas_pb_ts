@@ -1,17 +1,18 @@
-import { ArcData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { ArcData } from "../proto/compas_pb/generated/geometry_pb";
+import { ArcDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Circle } from "./circle";
+
+/** The fields a Arc is built from. */
+export type ArcInit = MessageInitShape<typeof ArcDataSchema>;
 
 export class Arc {
   public readonly data: ArcData;
   private _circle?: Circle;
 
-  constructor(input: { bytes: Uint8Array } | { data: ArcData }) {
-    let arcData: ArcData;
-    if ("bytes" in input) {
-      arcData = bytesToArcData(input.bytes);
-    } else {
-      arcData = input.data;
-    }
+  constructor(init: ArcInit) {
+    const arcData = create(ArcDataSchema, init);
 
     if (!arcData.startAngle || !arcData.endAngle || !arcData.circle) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Arc {
   }
 
   get bytes(): Uint8Array {
-    return arcDataToBytes(this.data);
+    return arcToBytes(this);
+  }
+
+  /** Reads a Arc from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Arc {
+    return bytesToArc(bytes);
   }
 
   get guid(): string {
@@ -43,16 +49,16 @@ export class Arc {
 
   get circle(): Circle {
     if (!this._circle) {
-      this._circle = new Circle({ data: this.data.circle! });
+      this._circle = new Circle(this.data.circle!);
     }
     return this._circle;
   }
 }
 
-export function bytesToArcData(bytes: Uint8Array): ArcData {
-  return ArcData.decode(bytes);
+export function bytesToArc(bytes: Uint8Array): Arc {
+  return new Arc(fromBinary(ArcDataSchema, bytes));
 }
 
-export function arcDataToBytes(data: ArcData): Uint8Array {
-  return ArcData.encode(data).finish();
+export function arcToBytes(arc: Arc): Uint8Array {
+  return toBinary(ArcDataSchema, arc.data);
 }

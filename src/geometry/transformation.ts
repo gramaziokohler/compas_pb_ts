@@ -1,4 +1,6 @@
-import { TransformationData } from "../generated/compas_pb/data/geometry";
+import { fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { TransformationData } from "../proto/compas_pb/generated/geometry_pb";
+import { TransformationDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 
 export class Transformation {
   public readonly data: TransformationData;
@@ -34,11 +36,11 @@ export class Transformation {
 export function bytesToTransformationData(
   bytes: Uint8Array,
 ): TransformationData {
-  return TransformationData.decode(bytes);
+  return fromBinary(TransformationDataSchema, bytes);
 }
 
 export function transformationDataToBytes(
   data: TransformationData,
 ): Uint8Array {
-  return TransformationData.encode(data).finish();
+  return toBinary(TransformationDataSchema, data);
 }

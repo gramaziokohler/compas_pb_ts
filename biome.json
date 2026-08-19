@@ -14,8 +14,7 @@
       "!coverage",
       "!dist",
       "!jsr.json",
-      "!src/_archive",
-      "!src/generated"
+      "!src/proto"
     ]
   },
   "formatter": {

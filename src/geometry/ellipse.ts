@@ -1,17 +1,18 @@
-import { EllipseData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { EllipseData } from "../proto/compas_pb/generated/geometry_pb";
+import { EllipseDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { Frame } from "./frame";
+
+/** The fields a Ellipse is built from. */
+export type EllipseInit = MessageInitShape<typeof EllipseDataSchema>;
 
 export class Ellipse {
   public readonly data: EllipseData;
   private _frame?: Frame;
 
-  constructor(input: { bytes: Uint8Array } | { data: EllipseData }) {
-    let ellipseData: EllipseData;
-    if ("bytes" in input) {
-      ellipseData = bytesToEllipseData(input.bytes);
-    } else {
-      ellipseData = input.data;
-    }
+  constructor(init: EllipseInit) {
+    const ellipseData = create(EllipseDataSchema, init);
 
     if (!ellipseData.major || !ellipseData.minor || !ellipseData.frame) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Ellipse {
   }
 
   get bytes(): Uint8Array {
-    return ellipseDataToBytes(this.data);
+    return ellipseToBytes(this);
+  }
+
+  /** Reads a Ellipse from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Ellipse {
+    return bytesToEllipse(bytes);
   }
 
   get guid(): string {
@@ -43,16 +49,16 @@ export class Ellipse {
 
   get frame(): Frame {
     if (!this._frame) {
-      this._frame = new Frame({ data: this.data.frame! });
+      this._frame = new Frame(this.data.frame!);
     }
     return this._frame;
   }
 }
 
-export function bytesToEllipseData(bytes: Uint8Array): EllipseData {
-  return EllipseData.decode(bytes);
+export function bytesToEllipse(bytes: Uint8Array): Ellipse {
+  return new Ellipse(fromBinary(EllipseDataSchema, bytes));
 }
 
-export function ellipseDataToBytes(data: EllipseData): Uint8Array {
-  return EllipseData.encode(data).finish();
+export function ellipseToBytes(ellipse: Ellipse): Uint8Array {
+  return toBinary(EllipseDataSchema, ellipse.data);
 }

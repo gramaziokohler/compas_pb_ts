@@ -1,17 +1,18 @@
-import { PolylineData } from "../generated/compas_pb/data/geometry";
+import type { MessageInitShape } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { PolylineData } from "../proto/compas_pb/generated/geometry_pb";
+import { PolylineDataSchema } from "../proto/compas_pb/generated/geometry_pb";
 import { type Point, pointsFromFlatCoordinates } from "./point";
+
+/** The fields a Polyline is built from. */
+export type PolylineInit = MessageInitShape<typeof PolylineDataSchema>;
 
 export class Polyline {
   public readonly data: PolylineData;
   private _points?: Point[];
 
-  constructor(input: { bytes: Uint8Array } | { data: PolylineData }) {
-    let polylineData: PolylineData;
-    if ("bytes" in input) {
-      polylineData = bytesToPolylineData(input.bytes);
-    } else {
-      polylineData = input.data;
-    }
+  constructor(init: PolylineInit) {
+    const polylineData = create(PolylineDataSchema, init);
 
     if (!polylineData.points || polylineData.points.length === 0) {
       throw new Error(
@@ -22,7 +23,12 @@ export class Polyline {
   }
 
   get bytes(): Uint8Array {
-    return polylineDataToBytes(this.data);
+    return polylineToBytes(this);
+  }
+
+  /** Reads a Polyline from the bytes of its protobuf message. */
+  static fromBytes(bytes: Uint8Array): Polyline {
+    return bytesToPolyline(bytes);
   }
 
   get guid(): string {
@@ -41,10 +47,10 @@ export class Polyline {
   }
 }
 
-export function bytesToPolylineData(bytes: Uint8Array): PolylineData {
-  return PolylineData.decode(bytes);
+export function bytesToPolyline(bytes: Uint8Array): Polyline {
+  return new Polyline(fromBinary(PolylineDataSchema, bytes));
 }
 
-export function polylineDataToBytes(data: PolylineData): Uint8Array {
-  return PolylineData.encode(data).finish();
+export function polylineToBytes(polyline: Polyline): Uint8Array {
+  return toBinary(PolylineDataSchema, polyline.data);
 }

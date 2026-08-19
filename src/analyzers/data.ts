@@ -1,26 +1,35 @@
-import type { Any } from "../generated/google/protobuf/any";
-import {
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import type { Any, Value } from "@bufbuild/protobuf/wkt";
+import { AnySchema } from "@bufbuild/protobuf/wkt";
+
+import type {
   AnyData,
-  MessageData,
-  ListData,
   DictData,
-  protobufPackage,
-} from "../generated/compas_pb/data/message";
+  ListData,
+} from "../proto/compas_pb/generated/message_pb";
+import {
+  AnyDataSchema,
+  DictDataSchema,
+  ListDataSchema,
+  MessageDataSchema,
+} from "../proto/compas_pb/generated/message_pb";
 
-import { TYPE_MAP, type Constructor } from "./typemap";
-export { COMPAS_PB_VERSION } from "../generated/compas_pb/version";
-import { COMPAS_PB_VERSION } from "../generated/compas_pb/version";
+import {
+  findRegistration,
+  findRegistrationForTypeUrl,
+  findRegistrationForValue,
+  type ProtobufObject,
+} from "../registry";
+import "./typemap";
+export { COMPAS_PB_VERSION } from "../proto/version";
+import { COMPAS_PB_VERSION } from "../proto/version";
 
-export interface ProtobufObject {
-  readonly bytes: Uint8Array;
-}
+export type { ProtobufObject };
 
 /**
  * Serializes a supported COMPAS wrapper into the complete MessageData envelope.
  *
  * This is the TypeScript equivalent of Python's `compas_pb.pb_dump_bts(object)`.
- * The returned bytes can be passed directly to `getObjectFromMessage` or sent
- * through transports used by COMPAS viewers.
  */
 export function pbDumpBytes(object: ProtobufObject): Uint8Array {
   const typeName = findTypeName(object);
@@ -30,23 +39,24 @@ export function pbDumpBytes(object: ProtobufObject): Uint8Array {
     );
   }
 
-  const data = AnyData.create({
-    message: {
-      typeUrl: `type.googleapis.com/${protobufPackage}.${typeName}`,
-      value: object.bytes,
+  const data = create(AnyDataSchema, {
+    data: {
+      case: "message",
+      value: create(AnySchema, {
+        typeUrl: `type.googleapis.com/${typeName}`,
+        value: object.bytes,
+      }),
     },
   });
-  return MessageData.encode(
-    MessageData.create({ data, version: COMPAS_PB_VERSION }),
-  ).finish();
+
+  return toBinary(
+    MessageDataSchema,
+    create(MessageDataSchema, { data, version: COMPAS_PB_VERSION }),
+  );
 }
 
 /**
  * Deserializes a complete COMPAS MessageData envelope.
- *
- * Geometry and datastructure messages become their registered wrapper class.
- * ListData and DictData messages are recursively materialized as plain
- * JavaScript arrays and objects.
  *
  * This is the TypeScript equivalent of Python's `compas_pb.pb_load_bts(bytes)`.
  */
@@ -59,7 +69,7 @@ function decodeMessageData(message: Uint8Array): AnyData {
     throw new Error("Binary data is empty.");
   }
 
-  const messageData = MessageData.decode(message);
+  const messageData = fromBinary(MessageDataSchema, message);
   checkVersionCompatibility(messageData.version);
 
   if (!messageData.data) {
@@ -95,144 +105,126 @@ function checkVersionCompatibility(version?: string): void {
 }
 
 function findTypeName(object: ProtobufObject): string | null {
-  for (const [typeName, constructor] of TYPE_MAP) {
-    if (object instanceof constructor) {
-      return typeName;
-    }
-  }
-  return null;
+  return findRegistrationForValue(object)?.fullName ?? null;
 }
 
 export function getObjectFromMessage(message: Uint8Array): any {
-  /**
-   * Extracts the protobuf Any object from a serialized message.
-   *
-   * This function decodes a serialized message in the form of a Uint8Array
-   * and extracts the contained protobuf Any object. The returned Any object
-   * can then be used for further processing or deserialization.
-   *
-   * @param {Uint8Array} message - The serialized message to unpack.
-   * @returns {Any} - The unpacked protobuf Any object.
-   */
   const data = decodeMessageData(message);
-  if (data.message) {
-    const objectConstructor = findConstructor(data.message);
-    return objectConstructor
-      ? new objectConstructor({ bytes: data.message.value })
-      : null;
+
+  switch (data.data.case) {
+    case "message": {
+      const registration = findRegistrationForTypeUrl(data.data.value.typeUrl);
+      return registration
+        ? registration.fromBytes(data.data.value.value)
+        : null;
+    }
+    case "dictValue":
+      return newDictionary(data.data.value);
+    case "listValue":
+      return newList(data.data.value);
+    case "fallback": {
+      const fallbackData = data.data.value.data;
+      return fallbackData ? newDictionary(fallbackData) : null;
+    }
+    default:
+      return null;
   }
-  if (data.dictValue) {
-    return new (TYPE_MAP.get("DictData")!)({ data: data.dictValue });
-  }
-  if (data.listValue) {
-    return new (TYPE_MAP.get("ListData")!)({ data: data.listValue });
-  }
-  if (data.fallback?.data) {
-    return new (TYPE_MAP.get("DictData")!)({ data: data.fallback.data });
-  }
-  return null;
 }
 
+/** Unpacks a serialized message into the protobuf Any it carries. */
 export function unpackMessage(message: Uint8Array): Any {
-  /**
-   * Unpacks a serialized message into a protobuf Any object.
-   *
-   * This function decodes a serialized message in the form of a Uint8Array
-   * and extracts the contained protobuf Any object. The returned Any object
-   * can then be used for further processing or deserialization.
-   *
-   * @param {Uint8Array} message - The serialized message to unpack.
-   * @returns {Any} - The unpacked protobuf Any object.
-   */
   const data = decodeMessageData(message);
-  if (!data.message) {
+  if (data.data.case !== "message") {
     throw new Error("Message does not contain a protobuf Any value.");
   }
-  return data.message;
+  return data.data.value;
 }
 
-function findConstructor(data: Any): Constructor | null {
-  /**
-   * Finds the constructor for a given protobuf Any object.
-   *
-   * This function extracts the type URL from the provided Any object,
-   * determines the corresponding type name, and retrieves the associated
-   * constructor from the TYPE_MAP. If no constructor is found for the
-   * type name, an error is thrown.
-   *
-   * @param {Any} data - The protobuf Any object containing the type information.
-   * @returns {Constructor} - The constructor function for the specified type.
-   * @throws {Error} - If the type is unsupported or not found in TYPE_MAP.
-   */
-  const typeUrl = data.typeUrl;
-  const typeName = typeUrl.split(".").slice(-1)[0];
-  const constructor = TYPE_MAP.get(typeName);
-  return constructor || null;
+function newDictionary(data: DictData) {
+  return new (findRegistration("compas_pb.data.DictData")!.constructor)({
+    data,
+  });
 }
 
+function newList(data: ListData) {
+  return new (findRegistration("compas_pb.data.ListData")!.constructor)({
+    data,
+  });
+}
+
+/**
+ * Fully materializes an AnyData item into a plain value.
+ *
+ * Dispatches on which arm of the `oneof` is set, mirroring Python's
+ * `WhichOneof("data")` in `compas_pb.core._deserialize_any`. Recurses through
+ * ListData/DictData so nested containers come back as plain arrays and objects.
+ */
 export function resolveAnyData(item: AnyData): any {
-  /**
-   * Fully materializes an AnyData item into a plain value.
-   *
-   * Unlike a shallow read of `.value`/`.message`/`.fallback`, this recurses
-   * into nested ListData/DictData payloads (packed as `Any`) so that lists
-   * and dicts nested inside a Dictionary or List come back as plain arrays
-   * and objects instead of raw, still-packed AnyData.
-   *
-   * @param {AnyData} item - The AnyData item to resolve.
-   * @returns {any} - The resolved value: a primitive, a plain array/object,
-   * a wrapper class instance (e.g. Point, Mesh), or null/undefined.
-   */
-  if (item.value !== undefined) {
-    return resolvePrimitive(item.value);
+  switch (item.data.case) {
+    case "value":
+      return resolvePrimitive(item.data.value);
+    case "intValue":
+      // int64 arrives as bigint; narrow to number, which is what callers expect.
+      return Number(item.data.value);
+    case "doubleValue":
+      return item.data.value;
+    case "dictValue":
+      return resolveDictData(item.data.value);
+    case "listValue":
+      return resolveListData(item.data.value);
+    case "message":
+      return resolveAny(item.data.value);
+    case "fallback": {
+      const fallbackData = item.data.value.data;
+      return fallbackData ? resolveDictData(fallbackData) : {};
+    }
+    default:
+      return undefined;
   }
-  if (item.intValue !== undefined) {
-    return item.intValue;
-  }
-  if (item.doubleValue !== undefined) {
-    return item.doubleValue;
-  }
-  if (item.dictValue !== undefined) {
-    return resolveDictData(item.dictValue);
-  }
-  if (item.listValue !== undefined) {
-    return resolveListData(item.listValue);
-  }
-  if (item.message !== undefined) {
-    return resolveAny(item.message);
-  }
-  if (item.fallback?.data !== undefined) {
-    return resolveDictData(item.fallback.data);
-  }
-  return undefined;
 }
 
-function resolvePrimitive(value: any): any {
-  if (typeof value !== "string" || !value.startsWith("base64:")) {
-    return value;
+function resolvePrimitive(value: Value): any {
+  switch (value.kind.case) {
+    case "nullValue":
+      return null;
+    case "boolValue":
+      return value.kind.value;
+    case "numberValue":
+      // Legacy path only: int/float now use the explicit intValue/doubleValue arms.
+      return value.kind.value;
+    case "stringValue": {
+      const text = value.kind.value;
+      if (!text.startsWith("base64:")) {
+        return text;
+      }
+      const binary = globalThis.atob(text.slice(7));
+      return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    }
+    default:
+      return null;
   }
-
-  const binary = globalThis.atob(value.slice(7));
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
 }
 
 function resolveAny(any: Any): any {
-  const typeName = any.typeUrl.split(".").slice(-1)[0];
-  if (typeName === "ListData") {
-    return resolveListData(ListData.decode(any.value));
+  const fullName = any.typeUrl.split("/").pop() ?? any.typeUrl;
+  // Legacy containers packed under Any rather than using the native list/dict arms.
+  if (fullName === "compas_pb.data.ListData") {
+    return resolveListData(fromBinary(ListDataSchema, any.value));
   }
-  if (typeName === "DictData") {
-    return resolveDictData(DictData.decode(any.value));
+  if (fullName === "compas_pb.data.DictData") {
+    return resolveDictData(fromBinary(DictDataSchema, any.value));
   }
-  const constructor = TYPE_MAP.get(typeName);
-  return constructor ? new constructor({ bytes: any.value }) : null;
+  const registration = findRegistration(fullName);
+  return registration ? registration.fromBytes(any.value) : null;
 }
 
 export function resolveListData(listData: ListData): any[] {
   return listData.items.map(resolveAnyData);
 }
 
-export function resolveDictData(dictData: DictData): { [key: string]: any } {
+export function resolveDictData(dictData: DictData): {
+  [key: string]: any;
+} {
   const result: { [key: string]: any } = {};
   for (const key of Object.keys(dictData.items)) {
     result[key] = resolveAnyData(dictData.items[key]);
