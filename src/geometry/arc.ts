@@ -14,10 +14,9 @@ export class Arc {
   constructor(init: ArcInit) {
     const arcData = create(ArcDataSchema, init);
 
-    if (!arcData.startAngle || !arcData.endAngle || !arcData.circle) {
-      throw new Error(
-        "Invalid ArcData: Missing required properties (startAngle, endAngle, or circle).",
-      );
+    // Proto3 scalar angles default to zero, including when omitted on the wire.
+    if (!arcData.circle) {
+      throw new Error("Invalid ArcData: Missing required property (circle).");
     }
     this.data = arcData;
   }
