@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v3.0.0...compas-pb-ts-v3.0.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* accept zero arc angles ([53389da](https://github.com/gramaziokohler/compas_pb_ts/commit/53389da893cf6a20dac0972a4557707b6bd3729e))
+* accept zero arc angles in protobuf wrappers ([536f1b2](https://github.com/gramaziokohler/compas_pb_ts/commit/536f1b26cde06a3006d72dadfba5c18c813c75cd))
+
 ## [3.0.0](https://github.com/gramaziokohler/compas_pb_ts/compare/compas-pb-ts-v2.0.0...compas-pb-ts-v3.0.0) (2026-08-19)
 
 
